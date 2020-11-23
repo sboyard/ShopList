@@ -59,6 +59,8 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
         } else if (this.data != data) {
             this.data = data;
         }
+
+        // notify the UI that the bound List has changed
         notifyDataSetChanged();
     }
 
@@ -85,6 +87,7 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
         void setViewModel(ViewModel viewModel) {
             if (binding != null) {
                 binding.setVariable(BR.viewModel, viewModel);
+                binding.executePendingBindings();
             }
         }
     }

@@ -10,56 +10,64 @@ import ca.on.conestogac.rsc.shoppinglist.BR;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
-import ca.on.conestogac.rsc.shoppinglist.models.ListItem;
+import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
+import ca.on.conestogac.rsc.shoppinglist.models.ShoppingList;
 
 public class ShoppingViewModel extends ObservableViewModel {
-    private final List<ListItemViewModel> data;
-    private final RecyclerViewDataAdapter adapter;
+    private List<ShoppingListViewModel> data;
+    private RecyclerViewDataAdapter adapter;
+    private ShoppingListener shoppingListener;
+    private String textShoppingListTitle;
+
+    public void setShoppingListener(ShoppingListener shoppingListener) {
+        this.shoppingListener = shoppingListener;
+    }
 
     @Bindable
-    private String textNewList;
-
-    public ShoppingViewModel() {
-        data = new ArrayList<>();
-        adapter = new RecyclerViewDataAdapter(R.layout.item_row);
-
-        populateData();
+    public String getTextShoppingListTitle() {
+        return textShoppingListTitle;
     }
 
-    public String getTextNewList() {
-        return textNewList;
-    }
-
-    public void setTextNewList(String newList) {
-        this.textNewList = newList;
-        notifyPropertyChanged(BR.textNewList);
-    }
-
-    public void onAddNewListClicked() {
-        if (textNewList != null && !textNewList.equals("")) {
-            data.add(new ListItemViewModel(new ListItem(textNewList)));
-            notifyPropertyChanged(BR.data);
-
-            setTextNewList("");
-        }
+    @Bindable
+    public void setTextShoppingListTitle(String newList) {
+        this.textShoppingListTitle = newList;
+        notifyPropertyChanged(BR.textShoppingListTitle);
     }
 
     @Bindable
     public List<? extends ViewModel> getData() {
-        return this.data;
+        if (data == null) {
+            data = new ArrayList<>();
+            populateData();
+        }
+        return data;
     }
 
     @Bindable
     public RecyclerViewDataAdapter getAdapter() {
-        return this.adapter;
+        if (adapter == null) {
+            adapter = new RecyclerViewDataAdapter(R.layout.shopping_list_row);
+        }
+        return adapter;
+    }
+
+    public ShoppingListener getShoppingListener() {
+        return shoppingListener;
+    }
+
+    public void onAddShoppingListClicked() {
+        if (textShoppingListTitle != null && !textShoppingListTitle.equals("")) {
+            addShoppingList(new ShoppingList(textShoppingListTitle));
+            setTextShoppingListTitle("");
+        }
+    }
+
+    private void addShoppingList(ShoppingList shoppingList) {
+        data.add(new ShoppingListViewModel(shoppingList, this));
+        //adapter.notifyDataSetChanged();
     }
 
     private void populateData() {
-        // Do an asynchronous operation to fetch users.
-        data.add(new ListItemViewModel(new ListItem("Canadian Tire")));
-        data.add(new ListItemViewModel(new ListItem("WalMart")));
-        data.add(new ListItemViewModel(new ListItem("Home Depot")));
-
-        notifyPropertyChanged(BR.data);
+        // TODO: Do an asynchronous operation to fetch users.
     }
 }

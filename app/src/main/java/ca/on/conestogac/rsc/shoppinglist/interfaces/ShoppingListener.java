@@ -1,7 +1,7 @@
 package ca.on.conestogac.rsc.shoppinglist.interfaces;
 
-import ca.on.conestogac.rsc.shoppinglist.models.ListItem;
+import ca.on.conestogac.rsc.shoppinglist.models.ShoppingList;
 
 public interface ShoppingListener {
-    void onShoppingListClicked(ListItem shoppingList);
+    void onShoppingListActivityChange(ShoppingList shoppingList);
 }

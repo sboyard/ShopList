@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class RecyclerViewDataBinding {
+public class RecyclerViewBinding {
     @BindingAdapter({"adapter", "data"})
     public void bind(RecyclerView recyclerView, RecyclerViewDataAdapter adapter, List<? extends ViewModel> data) {
         recyclerView.setAdapter(adapter);

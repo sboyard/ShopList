@@ -1,8 +1,12 @@
 package ca.on.conestogac.rsc.shoppinglist.models;
 
-public class ProductItem {
+public class Product {
     private boolean checked;
     private String title;
+
+    public Product(String title) {
+        this.title = title;
+    }
 
     public boolean isChecked() {
         return checked;

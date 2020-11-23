@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingViewModel" />
+            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,20 +30,20 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/text_new_shopping_list"
+                    android:id="@+id/text_new_product"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="9"
-                    android:hint="@string/add_new_list"
+                    android:hint="@string/add_new_product"
                     android:imeOptions="actionDone"
                     android:inputType="text"
                     android:padding="8dp"
                     android:singleLine="true"
-                    android:text="@={viewModel.textShoppingListTitle}"
-                />
+                    android:text="@={viewModel.textProductTitle}"
+                    />
 
                 <ImageButton
-                    android:id="@+id/imageButton_new_shopping_list"
+                    android:id="@+id/imageButton_new_product"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
@@ -51,18 +51,18 @@
                     android:scaleType="centerCrop"
                     android:tint="@android:color/background_dark"
                     app:srcCompat="@android:drawable/ic_menu_add"
-                    android:onClick="@{() -> viewModel.onAddShoppingListClicked()}"
-                />
+                    android:onClick="@{() -> viewModel.onAddProductClicked()}"
+                    />
 
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_shopping_lists"
+                android:id="@+id/rv_products"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 adapter="@{viewModel.adapter}"
                 data="@{viewModel.data}"
-            />
+                />
 
         </LinearLayout>
 

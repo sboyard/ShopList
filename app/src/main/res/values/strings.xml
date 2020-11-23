@@ -2,4 +2,5 @@
     <string name="app_name">Shopping List</string>
     <string name="add_new_list">Add New List</string>
     <string name="count_and_max">%1$d/%2$d</string>
+    <string name="add_new_product">Add New Product</string>
 </resources>
