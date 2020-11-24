@@ -5,12 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -18,10 +19,12 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
     private final int itemLayout;
     private List<? extends ViewModel> data;
 
-    public RecyclerViewDataAdapter(int itemLayout) {
+    public RecyclerViewDataAdapter(List<? extends ViewModel> data, int itemLayout) {
+        this.data = data;
         this.itemLayout = itemLayout;
     }
 
+    @NotNull
     @Override
     public DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater
@@ -36,33 +39,22 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
     }
 
     @Override
-    public void onViewAttachedToWindow(DataViewHolder holder) {
+    public void onViewAttachedToWindow(@NotNull DataViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         holder.bind();
     }
 
     @Override
-    public void onViewDetachedFromWindow(DataViewHolder holder) {
+    public void onViewDetachedFromWindow(@NotNull DataViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.unbind();
     }
-
 
     @Override
     public int getItemCount() {
         return data.size();
     }
 
-    public void updateData(@Nullable List<? extends ViewModel> data) {
-        if ((data == null || data.isEmpty()) && this.data != null) {
-            this.data.clear();
-        } else if (this.data != data) {
-            this.data = data;
-        }
-
-        // notify the UI that the bound List has changed
-        notifyDataSetChanged();
-    }
 
     static class DataViewHolder extends RecyclerView.ViewHolder {
         ViewDataBinding binding;

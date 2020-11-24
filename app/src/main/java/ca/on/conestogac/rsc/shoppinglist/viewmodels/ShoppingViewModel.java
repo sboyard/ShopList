@@ -3,24 +3,23 @@ package ca.on.conestogac.rsc.shoppinglist.viewmodels;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.ViewModel;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.on.conestogac.rsc.shoppinglist.BR;
-import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
-import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
 import ca.on.conestogac.rsc.shoppinglist.models.ShoppingList;
 
 public class ShoppingViewModel extends ObservableViewModel {
-    private List<ShoppingListViewModel> data;
-    private RecyclerViewDataAdapter adapter;
+    private final List<ShoppingListViewModel> data;
     private ShoppingListener shoppingListener;
     private String textShoppingListTitle;
 
-    public void setShoppingListener(ShoppingListener shoppingListener) {
-        this.shoppingListener = shoppingListener;
+    public ShoppingViewModel() {
+        this.data = new ArrayList<>();
     }
 
     @Bindable
@@ -36,23 +35,15 @@ public class ShoppingViewModel extends ObservableViewModel {
 
     @Bindable
     public List<? extends ViewModel> getData() {
-        if (data == null) {
-            data = new ArrayList<>();
-            populateData();
-        }
         return data;
     }
 
-    @Bindable
-    public RecyclerViewDataAdapter getAdapter() {
-        if (adapter == null) {
-            adapter = new RecyclerViewDataAdapter(R.layout.shopping_list_row);
-        }
-        return adapter;
+    public void onViewCreated(ShoppingListener shoppingListener) {
+        this.shoppingListener = shoppingListener;
     }
 
-    public ShoppingListener getShoppingListener() {
-        return shoppingListener;
+    public void onViewDestroyed() {
+        shoppingListener = null;
     }
 
     public void onAddShoppingListClicked() {
@@ -62,9 +53,19 @@ public class ShoppingViewModel extends ObservableViewModel {
         }
     }
 
+    public void onShoppingListClicked(@NotNull ShoppingListViewModel shoppingList) {
+        shoppingListener.onShoppingListActivityChange(shoppingList);
+    }
+
+    public void onShoppingListRemoved(@NotNull ShoppingListViewModel shoppingList) {
+        int index = data.indexOf(shoppingList);
+        data.remove(index);
+        shoppingListener.onShoppingListRemoved(index);
+    }
+
     private void addShoppingList(ShoppingList shoppingList) {
+        shoppingListener.onShoppingListInserted(data.size());
         data.add(new ShoppingListViewModel(shoppingList, this));
-        //adapter.notifyDataSetChanged();
     }
 
     private void populateData() {

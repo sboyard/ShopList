@@ -7,25 +7,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.on.conestogac.rsc.shoppinglist.BR;
-import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
-import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
-import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
+import ca.on.conestogac.rsc.shoppinglist.interfaces.ProductListener;
 import ca.on.conestogac.rsc.shoppinglist.models.ShoppingList;
 import ca.on.conestogac.rsc.shoppinglist.models.Product;
 
 public class ShoppingListViewModel extends ObservableViewModel {
-    private final ShoppingList model;
+    private String title;
     private final ShoppingViewModel parent;
+    private final List<ProductViewModel> data;
 
-    private List<ProductViewModel> data;
-    private RecyclerViewDataAdapter adapter;
+    private ProductListener productListener;
 
     private String textProductTitle;
 
     public ShoppingListViewModel(ShoppingList shoppingList, ShoppingViewModel parent) {
-        this.model = shoppingList;
+        // set model values
+        this.title = shoppingList.getTitle();
+
         this.parent = parent;
+        this.data = new ArrayList<>();
     }
 
     @Bindable
@@ -40,53 +41,48 @@ public class ShoppingListViewModel extends ObservableViewModel {
     }
 
     @Bindable
-    public ShoppingList getModel() {
-        return model;
+    public int getCount() {
+        int completed = 0;
+        for (ProductViewModel product: data) {
+            if (product.isChecked()) {
+                completed++;
+            }
+        }
+        return completed;
     }
 
     @Bindable
-    public int getCount() {
-        return 2;
-    } // TODO: Add this functionality
-
-    @Bindable
     public int getSize() {
-        return 3;
-    } // TODO: Add this functionality
+        return data.size();
+    }
 
     @Bindable
     public String getTitle() {
-        return model.getTitle();
+        return title;
     }
 
     @Bindable
     public void setTitle(String title) {
-        this.model.setTitle(title);
+        this.title = title;
         notifyPropertyChanged(BR.title);
+        // TODO : Update DB instance
     }
 
     @Bindable
     public List<? extends ViewModel> getData() {
-        if (data == null) {
-            data = new ArrayList<>();
-            populateData();
-        }
         return data;
     }
 
-    @Bindable
-    public RecyclerViewDataAdapter getAdapter() {
-        if (adapter == null) {
-            adapter = new RecyclerViewDataAdapter(R.layout.product_row);
-        }
-        return adapter;
+    public void onViewCreated(ProductListener productListener) {
+        this.productListener = productListener;
+    }
+
+    public void onViewDestroyed() {
+        productListener = null;
     }
 
     public void onClicked() {
-        ShoppingListener listener = parent.getShoppingListener();
-        if (listener != null) {
-            listener.onShoppingListActivityChange(this.model);
-        }
+        parent.onShoppingListClicked(this);
     }
 
     public void onAddProductClicked() {
@@ -96,7 +92,14 @@ public class ShoppingListViewModel extends ObservableViewModel {
         }
     }
 
+    public void onRemoveClicked() {
+        // TODO : remove DB instance
+        // TODO : binding for a confirmation dialog would be great
+        parent.onShoppingListRemoved(this);
+    }
+
     private void addProduct(Product product) {
+        productListener.onProductInserted(data.size());
         data.add(new ProductViewModel(product));
     }
 

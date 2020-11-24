@@ -4,12 +4,12 @@ import android.app.Application;
 
 import androidx.databinding.DataBindingUtil;
 
-import ca.on.conestogac.rsc.shoppinglist.databinding.AppDataBindingComponent;
+//import ca.on.conestogac.rsc.shoppinglist.databinding.AppDataBindingComponent;
 
 public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DataBindingUtil.setDefaultComponent(new AppDataBindingComponent());
+        //DataBindingUtil.setDefaultComponent(new AppDataBindingComponent());
     }
 }

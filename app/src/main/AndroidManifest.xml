@@ -11,11 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".views.ShoppingListActivity"
-            android:label="@string/app_name" />
-
-        <activity android:name=".views.ShoppingActivity">
+        <activity android:name=".views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
