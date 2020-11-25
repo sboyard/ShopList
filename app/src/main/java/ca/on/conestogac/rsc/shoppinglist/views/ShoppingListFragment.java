@@ -6,10 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import ca.on.conestogac.rsc.shoppinglist.R;
+import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
+import ca.on.conestogac.rsc.shoppinglist.data.source.ApplicationDatabase;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentShoppingListBinding;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
@@ -42,6 +43,9 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
         // title
         requireActivity().setTitle(R.string.app_name);
 
+        // repository
+        ApplicationDbRepository repository = new ApplicationDbRepository(ApplicationDatabase.getInstance(getContext()));
+
         binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_shopping_list,
@@ -49,7 +53,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
                 false);
 
         // view model & binding
-        viewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
+        viewModel = new ShoppingViewModel(repository);
         binding.setViewModel(viewModel);
 
         // recycler view adapter
@@ -58,7 +62,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
         // init RecyclerView
         RecyclerView recyclerView = binding.rvShoppingLists;
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         // get New List editText and performClick on submit button when enter on keyboard is pressed
@@ -73,8 +77,27 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
             return false;
         });
 
+        // drag and drop
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         return binding.getRoot();
     }
+
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            viewModel.onCollectionsSwap(fromPosition, toPosition);
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -91,6 +114,11 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
     @Override
     public void onShoppingListInserted(int position) {
         adapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void onShoppingListItemMoved(int fromPosition, int toPosition) {
+        adapter.notifyItemMoved(fromPosition, toPosition);
     }
 
     @Override
