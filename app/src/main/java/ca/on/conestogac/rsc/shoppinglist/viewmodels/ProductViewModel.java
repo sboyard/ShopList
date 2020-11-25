@@ -36,7 +36,7 @@ public class ProductViewModel extends ObservableViewModel {
         // notify UI
         notifyPropertyChanged(BR.checked);
 
-        // updated DB
+        // update DB
         db.products().updateProductChecked(productId, checked);
     }
 

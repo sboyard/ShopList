@@ -26,14 +26,20 @@ import ca.on.conestogac.rsc.shoppinglist.data.source.ApplicationDatabase;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentShoppingListBinding;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
+import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingNavigator;
 import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel;
 import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingViewModel;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
+    private final ShoppingNavigator shoppingNavigator;
     private FragmentShoppingListBinding binding;
     private RecyclerViewDataAdapter adapter;
     private ShoppingViewModel viewModel;
+
+    public ShoppingListFragment(ShoppingNavigator shoppingNavigator) {
+        this.shoppingNavigator = shoppingNavigator;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -128,11 +134,8 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
     @Override
     public void onShoppingListActivityChange(ShoppingListViewModel shoppingList) {
-        ProductListFragment fragment = new ProductListFragment(shoppingList);
-        getParentFragmentManager().beginTransaction()
-            .replace(R.id.main_content, fragment)
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            .addToBackStack(null)
-            .commit();
+        shoppingNavigator.onStartProductList(shoppingList);
     }
+
+
 }

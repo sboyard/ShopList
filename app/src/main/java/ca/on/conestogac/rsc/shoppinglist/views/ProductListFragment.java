@@ -1,5 +1,6 @@
 package ca.on.conestogac.rsc.shoppinglist.views;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
@@ -22,15 +23,20 @@ import android.widget.ImageButton;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentProductListBinding;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
+import ca.on.conestogac.rsc.shoppinglist.interfaces.ActivityListener;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ProductListener;
+import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingNavigator;
 import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel;
 
-public class ProductListFragment extends Fragment implements ProductListener {
+public class ProductListFragment extends Fragment implements ProductListener, ActivityListener {
+
+    private final ShoppingNavigator shoppingNavigator;
     private FragmentProductListBinding binding;
     private RecyclerViewDataAdapter adapter;
     private final ShoppingListViewModel viewModel;
 
-    public ProductListFragment(ShoppingListViewModel viewModel) {
+    public ProductListFragment(ShoppingNavigator shoppingNavigator, ShoppingListViewModel viewModel) {
+        this.shoppingNavigator = shoppingNavigator;
         this.viewModel = viewModel;
     }
 
@@ -70,6 +76,15 @@ public class ProductListFragment extends Fragment implements ProductListener {
             return false;
         });
 
+//        // This callback will only be called when MyFragment is at least Started.
+//        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+//            @Override
+//            public void handleOnBackPressed() {
+//                shoppingNavigator.onEnableActionBarUp(false);
+//            }
+//        };
+//        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
         return binding.getRoot();
     }
 
@@ -93,5 +108,12 @@ public class ProductListFragment extends Fragment implements ProductListener {
     @Override
     public void onProductRemoved(int position) {
         adapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        //shoppingNavigator.onStartShoppingList();
+        shoppingNavigator.onEnableActionBarUp(false);
+        return false;
     }
 }
