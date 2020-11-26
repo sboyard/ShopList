@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.Observable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,27 +20,24 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentProductListBinding;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ProductListener;
-import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel;
+import ca.on.conestogac.rsc.shoppinglist.viewmodels.ProductListsViewModel;
 
 public class ProductListFragment extends Fragment implements ProductListener {
     private FragmentProductListBinding binding;
     private RecyclerViewDataAdapter adapter;
-    private final ShoppingListViewModel viewModel;
-
-    public ProductListFragment(ShoppingListViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
+    private ProductListsViewModel viewModel = null;
+    private String shoppingListId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        // title
-        requireActivity().setTitle(viewModel.getTitle());
+        App app = (App)(requireActivity().getApplication());
 
         binding = DataBindingUtil.inflate(
                 inflater,
@@ -47,10 +45,14 @@ public class ProductListFragment extends Fragment implements ProductListener {
                 container,
                 false);
 
+        shoppingListId = requireArguments().getString("shoppingListId");
+
+        // viewModel
+        viewModel = new ProductListsViewModel(requireContext(), app.getRepository());
         binding.setViewModel(viewModel);
 
         // recycler view adapter
-        adapter = new RecyclerViewDataAdapter(viewModel.getData(), R.layout.product_row);
+        adapter = new RecyclerViewDataAdapter(viewModel.getProducts(), R.layout.product_row);
         binding.rvProductsList.setAdapter(adapter);
 
         // init RecyclerView
@@ -80,18 +82,52 @@ public class ProductListFragment extends Fragment implements ProductListener {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.start(shoppingListId);
+        viewModel.shoppingListTitle.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                requireActivity().setTitle(viewModel.shoppingListTitle.get());
+            }
+        });
+    }
+
+    @Override
     public void onDestroyView() {
         viewModel.onViewDestroyed();
         super.onDestroyView();
     }
 
     @Override
+    public void onSnackBarDisplay(String message) {
+        // TODO : display snackBar message
+    }
+
+    @Override
     public void onProductInserted(int position) {
         adapter.notifyItemInserted(position);
+        binding.rvProductsList.scrollToPosition(position);
+    }
+
+    @Override
+    public void onProductRangeInserted(int fromPosition, int toPosition) {
+        adapter.notifyItemRangeInserted(fromPosition, toPosition);
+        binding.rvProductsList.scrollToPosition(fromPosition);
+    }
+
+    @Override
+    public void onProductItemMoved(int fromPosition, int toPosition) {
+        adapter.notifyItemMoved(fromPosition, toPosition);
     }
 
     @Override
     public void onProductRemoved(int position) {
         adapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onProductRangeRemoved(int fromPosition, int toPosition) {
+        adapter.notifyItemRangeRemoved(fromPosition, toPosition);
     }
 }

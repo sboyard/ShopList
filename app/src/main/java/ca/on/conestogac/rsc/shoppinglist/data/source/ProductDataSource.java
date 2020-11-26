@@ -11,6 +11,7 @@ import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
 public interface ProductDataSource {
     interface LoadProductsCallback {
         void onProductsLoaded(List<Product> products);
+        void onDataNotAvailable();
     }
 
     // create

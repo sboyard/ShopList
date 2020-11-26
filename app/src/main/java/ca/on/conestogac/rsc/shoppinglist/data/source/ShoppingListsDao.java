@@ -8,6 +8,7 @@ import androidx.room.Query;
 import java.util.List;
 
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingList;
+import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 
 @Dao
 public interface ShoppingListsDao {
@@ -25,8 +26,20 @@ public interface ShoppingListsDao {
      *
      * @return all shoppingLists.
      */
-    @Query("SELECT * FROM shoppinglist ORDER BY sortIndex")
-    List<ShoppingList> getShoppingLists();
+    @Query("SELECT *, " +
+            "(SELECT COUNT(shoppinglistid) FROM product p WHERE p.shoppinglistid=s.shoppinglistid AND checked=1) checkedCount, " +
+            "(SELECT COUNT(shoppinglistid) FROM product p WHERE p.shoppinglistid=s.shoppinglistid) totalCount " +
+            "FROM shoppinglist s ORDER BY sortIndex")
+    List<ShoppingListCounts> getShoppingLists();
+
+    /**
+     * Select all shoppingList from the shoppingList table by id.
+     *
+     * @param shoppingListId the shoppingList id.
+     * @return all shoppingLists.
+     */
+    @Query("SELECT * FROM shoppinglist WHERE shoppinglistid = :shoppingListId")
+    ShoppingList getShoppingListById(String shoppingListId);
 
     /**
      * Update a shoppingList.

@@ -4,6 +4,8 @@ import androidx.databinding.Observable;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.ViewModel;
 
+import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
+
 public abstract class ObservableViewModel extends ViewModel implements Observable {
 
     PropertyChangeRegistry callBacks = new PropertyChangeRegistry();

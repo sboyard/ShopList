@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel" />
+            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ProductListsViewModel" />
     </data>
 
     <LinearLayout
@@ -37,7 +37,7 @@
                 android:inputType="text"
                 android:padding="8dp"
                 android:singleLine="true"
-                android:text="@={viewModel.textProductTitle}"
+                android:text="@={viewModel.textTitleNewProduct}"
             />
 
             <ImageButton

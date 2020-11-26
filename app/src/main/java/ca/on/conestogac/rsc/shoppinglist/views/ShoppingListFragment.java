@@ -20,20 +20,19 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
-import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
-import ca.on.conestogac.rsc.shoppinglist.data.source.ApplicationDatabase;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentShoppingListBinding;
 import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
-import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel;
-import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingViewModel;
+import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListItemViewModel;
+import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListsViewModel;
 
 public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
     private FragmentShoppingListBinding binding;
     private RecyclerViewDataAdapter adapter;
-    private ShoppingViewModel viewModel;
+    private ShoppingListsViewModel viewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -42,9 +41,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
         // title
         requireActivity().setTitle(R.string.app_name);
-
-        // repository
-        ApplicationDbRepository repository = new ApplicationDbRepository(ApplicationDatabase.getInstance(getContext()));
+        App app = (App)requireActivity().getApplication();
 
         binding = DataBindingUtil.inflate(
                 inflater,
@@ -53,11 +50,11 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
                 false);
 
         // view model & binding
-        viewModel = new ShoppingViewModel(repository);
+        viewModel = new ShoppingListsViewModel(requireContext(), app.getRepository());
         binding.setViewModel(viewModel);
 
         // recycler view adapter
-        adapter = new RecyclerViewDataAdapter(viewModel.getData(), R.layout.shopping_list_row);
+        adapter = new RecyclerViewDataAdapter(viewModel.getShoppingLists(), R.layout.shopping_list_row);
         binding.rvShoppingLists.setAdapter(adapter);
 
         // init RecyclerView
@@ -106,14 +103,31 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDestroyView() {
         viewModel.onViewDestroyed();
         super.onDestroyView();
     }
 
     @Override
+    public void onSnackBarDisplay(String message) {
+        // TODO : display snackBar message
+    }
+
+    @Override
     public void onShoppingListInserted(int position) {
         adapter.notifyItemInserted(position);
+        binding.rvShoppingLists.scrollToPosition(position);
+    }
+
+    @Override
+    public void onShoppingListRangeInserted(int fromPosition, int toPosition) {
+        adapter.notifyItemRangeInserted(fromPosition, toPosition);
+        binding.rvShoppingLists.scrollToPosition(fromPosition);
     }
 
     @Override
@@ -127,8 +141,18 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
     }
 
     @Override
-    public void onShoppingListActivityChange(ShoppingListViewModel shoppingList) {
-        ProductListFragment fragment = new ProductListFragment(shoppingList);
+    public void onShoppingListProductRangeRemoved(int fromPosition, int toPosition) {
+        adapter.notifyItemRangeRemoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onShoppingListActivityChange(ShoppingListItemViewModel shoppingList) {
+        ProductListFragment fragment = new ProductListFragment();
+
+        Bundle args = new Bundle();
+        args.putString("shoppingListId", shoppingList.getShoppingListId());
+        fragment.setArguments(args);
+
         getParentFragmentManager().beginTransaction()
             .replace(R.id.main_content, fragment)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

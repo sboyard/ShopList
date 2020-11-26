@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingViewModel" />
+            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListsViewModel" />
     </data>
 
     <FrameLayout
@@ -41,7 +41,7 @@
                 android:inputType="text"
                 android:padding="8dp"
                 android:singleLine="true"
-                android:text="@={viewModel.textShoppingListTitle}"
+                android:text="@={viewModel.textTitleNewShoppingList}"
                 android:importantForAutofill="no"
             />
 

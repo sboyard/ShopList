@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListViewModel"/>
+            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListItemViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,7 +68,7 @@
                         android:id="@+id/textView_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{String.format(@string/count_and_max, viewModel.count, viewModel.size), default=`0/0`}"
+                        android:text="@{String.format(@string/count_and_max, viewModel.checkedCount, viewModel.totalCount), default=`0/0`}"
                     />
                 </LinearLayout>
 

@@ -8,8 +8,9 @@ import androidx.room.RoomDatabase;
 
 import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingList;
+import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 
-@Database(entities = {ShoppingList.class, Product.class}, version = 1, exportSchema = false)
+@Database(entities = {ShoppingList.class, ShoppingListCounts.class, Product.class}, version = 1, exportSchema = false)
 public abstract class ApplicationDatabase extends RoomDatabase {
 
     private static ApplicationDatabase INSTANCE;

@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity(tableName = "shoppinglist")
-public final class ShoppingList {
+public class ShoppingList {
 
     @PrimaryKey
     @NonNull
