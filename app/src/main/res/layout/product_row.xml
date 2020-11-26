@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ProductViewModel"/>
+            type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ProductItemViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

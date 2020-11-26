@@ -2,6 +2,7 @@ package ca.on.conestogac.rsc.shoppinglist.data.source;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingList;
+import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 
 public class ShoppingListRepository implements ShoppingListsDataSource {
 
@@ -30,10 +32,30 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
 
     public void getShoppingLists(@NotNull final LoadShoppingListsCallback callback) {
         Runnable runnable = () -> {
-            final List<ShoppingList> shoppingLists = db.shoppingListsDao().getShoppingLists();
+            final List<ShoppingListCounts> shoppingLists = db.shoppingListsDao().getShoppingLists();
 
             mainThreadHandler.post(() -> {
-                callback.onShoppingListsLoaded(shoppingLists);
+                if (shoppingLists.isEmpty()) { // || shoppingLists.size() == 1 && TextUtils.isEmpty(shoppingLists.get(0).getId())) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onShoppingListsLoaded(shoppingLists);
+                }
+            });
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    public void getShoppingList(@NotNull final String shoppingListId, @NotNull final LoadShoppingListCallback callback) {
+        Runnable runnable = () -> {
+            final ShoppingList shoppingList = db.shoppingListsDao().getShoppingListById(shoppingListId);
+
+            mainThreadHandler.post(() -> {
+                if (shoppingList == null) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onShoppingListLoaded(shoppingList);
+                }
             });
         };
         Thread thread = new Thread(runnable);

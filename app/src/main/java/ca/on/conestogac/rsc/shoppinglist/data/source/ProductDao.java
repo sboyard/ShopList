@@ -21,12 +21,20 @@ public interface ProductDao {
     void insertProduct(Product product);
 
     /**
-     * Select all products from the product table.
+     * Select all products from the product table with shoppingListId.
      *
      * @return all products.
      */
     @Query("SELECT * FROM product WHERE shoppinglistid = :shoppingListId ORDER BY sortIndex")
     List<Product> getProductsByShoppingListId(String shoppingListId);
+
+    /**
+     * Select count of products by shoppingListId.
+     *
+     * @return count of products.
+     */
+    @Query("SELECT COUNT(shoppinglistid) FROM product WHERE shoppinglistid = :shoppingListId ORDER BY sortIndex")
+    int getCountByShoppingListId(String shoppingListId);
 
     /**
      * Update the checked status of a product
