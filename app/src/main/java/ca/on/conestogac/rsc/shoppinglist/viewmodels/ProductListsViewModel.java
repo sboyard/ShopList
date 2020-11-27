@@ -166,8 +166,20 @@ public class ProductListsViewModel extends ObservableViewModel
     }
 
     @Override
-    public void onItemRemove(@NotNull ProductItemViewModel item) {
-        //productListener.onSnackBarDisplay(context.getString(R.string.product_deleted));
+    public void onItemRemove(@NotNull ProductItemViewModel product) {
+        // remove
+        int index = products.indexOf(product);
+        products.remove(index);
+
+        // notify UI
+        productListener.onProductRemoved(index);
+        productListener.onSnackBarDisplay(context.getString(R.string.product_deleted));
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noProductsLabel);
+
+        // delete from DB
+        db.products().deleteProduct(product.getProductId());
     }
 
     @Override

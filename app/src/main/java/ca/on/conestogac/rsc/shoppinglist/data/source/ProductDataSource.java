@@ -22,4 +22,8 @@ public interface ProductDataSource {
 
     // update
     void updateProductChecked(@NotNull String productId, boolean checked);
+    void updateProductTitle(@NotNull String productId, @NotNull String title);
+
+    // delete
+    void deleteProduct(@NonNull String productId);
 }

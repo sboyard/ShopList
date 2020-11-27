@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ProductItemViewModel"/>
@@ -16,9 +17,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingStart="10dp"
             android:paddingTop="5dp"
@@ -36,16 +34,30 @@
                 android:checked="@={viewModel.checked}"
             />
 
-            <TextView
-                android:id="@+id/textView_title"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/editText_title"
+                android:text="@={viewModel.title, default=`Title Placeholder`}"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="2dp"
-                android:text="@{viewModel.title, default=`Title Placeholder`}"
-                android:textSize="20sp"
-                android:textStyle="bold"
-            />
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions"
+                android:background="@android:color/transparent"
+                app:onFocusChangeListener="@{(v, hasFocus) -> viewModel.onFocusChange(hasFocus)}"
+                />
+
+            <ImageButton
+                android:id="@+id/imageButton_delete"
+                android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE, default=visible}"
+                android:onClick="@{() -> viewModel.onRemoveClicked()}"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
+                android:scaleType="centerCrop"
+                android:backgroundTint="?android:attr/colorBackground"
+                android:tint="@color/colorLightRed"
+                app:srcCompat="@drawable/ic_multiply"
+                />
 
         </LinearLayout>
 
