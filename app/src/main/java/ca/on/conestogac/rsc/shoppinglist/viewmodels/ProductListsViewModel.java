@@ -81,6 +81,23 @@ public class ProductListsViewModel extends ObservableViewModel
         notifyPropertyChanged(BR.textTitleNewProduct);
     }
 
+    @Bindable
+    public boolean isEmpty() {
+        return products.size() == 0;
+    }
+
+    @Bindable
+    public int getNoProductsIcon() {
+        // TODO: change this drawable resource after filter modes are added
+        return R.drawable.ic_clipboard_pencil;
+    }
+
+    @Bindable
+    public int getNoProductsLabel() {
+        // TODO: change this strings resource after filter modes are added
+        return R.string.no_products_message;
+    }
+
     public void onAddProductClicked() {
         if (!TextUtils.isEmpty(textTitleNewProduct)) {
             Product product = new Product(shoppingListId, textTitleNewProduct, products.size());
@@ -103,6 +120,10 @@ public class ProductListsViewModel extends ObservableViewModel
 
         productListener.onProductInserted(products.size());
         products.add(itemViewModel);
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noProductsLabel);
+        notifyPropertyChanged(BR.noProductsIcon);
     }
 
     private void addProductRange(List<Product> products) {
@@ -138,6 +159,10 @@ public class ProductListsViewModel extends ObservableViewModel
             products.clear();
         }
         modelObservable.set(null);
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noProductsLabel);
+        notifyPropertyChanged(BR.noProductsIcon);
     }
 
     @Override

@@ -48,6 +48,17 @@ public class ShoppingListsViewModel extends ObservableViewModel
     }
 
     @Bindable
+    public boolean isEmpty() {
+        return shoppingLists.size() == 0;
+    }
+
+    @Bindable
+    public int getNoShoppingListsLabel() {
+        // TODO: change this strings resource after filter modes are added
+        return R.string.no_shopping_lists_message;
+    }
+
+    @Bindable
     public List<? extends ViewModel> getShoppingLists() {
         return shoppingLists;
     }
@@ -104,6 +115,9 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
         // notify UI
         this.shoppingListener.onShoppingListInserted(shoppingLists.size());
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noShoppingListsLabel);
     }
 
     private void addShoppingListRange(List<ShoppingListCounts> shoppingLists) {
@@ -131,6 +145,9 @@ public class ShoppingListsViewModel extends ObservableViewModel
     public void onDataNotAvailable() {
         shoppingListener.onShoppingListProductRangeRemoved(0, shoppingLists.size());
         this.shoppingLists.clear();
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noShoppingListsLabel);
     }
 
     @Override
@@ -142,6 +159,9 @@ public class ShoppingListsViewModel extends ObservableViewModel
         // notify UI
         shoppingListener.onShoppingListRemoved(index);
         shoppingListener.onSnackBarDisplay(context.getString(R.string.list_deleted));
+
+        notifyPropertyChanged(BR.empty);
+        notifyPropertyChanged(BR.noShoppingListsLabel);
 
         // delete from DB
         db.shoppingLists().deleteShoppingList(shoppingList.getShoppingListId());
