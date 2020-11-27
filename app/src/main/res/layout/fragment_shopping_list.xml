@@ -5,65 +5,96 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListsViewModel" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
+        android:id="@+id/product_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/shopping_list_content"
-        tools:context=".views.ShoppingListFragment"
-        app:navGraph="@navigation/nav_graph"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/text_new_shopping_list"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="9"
-                android:hint="@string/add_new_list"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:padding="8dp"
-                android:singleLine="true"
-                android:text="@={viewModel.textTitleNewShoppingList}"
-                android:importantForAutofill="no"
-            />
-
-            <ImageButton
-                android:id="@+id/imageButton_new_shopping_list"
-                android:onClick="@{() -> viewModel.onAddShoppingListClicked()}"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitXY"
-                android:adjustViewBounds="true"
-                android:backgroundTint="?android:attr/colorBackground"
-                android:tint="@color/colorAccent"
-                app:srcCompat="@drawable/ic_plus" />
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_shopping_lists"
+            android:id="@+id/shopping_list_content"
+            tools:context=".views.ShoppingListFragment"
+            app:navGraph="@navigation/nav_graph"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-        />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
-    </FrameLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/text_new_shopping_list"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="9"
+                    android:hint="@string/add_new_list"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:padding="8dp"
+                    android:singleLine="true"
+                    android:text="@={viewModel.textTitleNewShoppingList}"
+                    android:importantForAutofill="no"
+                />
+
+                <ImageButton
+                    android:id="@+id/imageButton_new_shopping_list"
+                    android:onClick="@{() -> viewModel.onAddShoppingListClicked()}"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    android:backgroundTint="?android:attr/colorBackground"
+                    android:tint="@color/colorAccent"
+                    app:srcCompat="@drawable/ic_plus"
+                    />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_shopping_lists"
+                android:visibility="@{viewModel.empty ? View.GONE : View.VISIBLE}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+            />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/no_shopping_lists"
+            android:visibility="@{viewModel.empty ? View.VISIBLE : View.GONE}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/no_shopping_lists_icon"
+                app:srcCompat="@drawable/ic_shopping_cart"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="fitXY"
+                android:layout_gravity="center"
+                android:tint="@color/colorMediumGray"
+                android:backgroundTint="?android:attr/colorBackground"
+                />
+
+            <TextView
+                android:id="@+id/no_shopping_lists_label"
+                android:text="@{viewModel.noShoppingListsLabel, default=`Example Empty Text`}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                />
+        </LinearLayout>
+    </RelativeLayout>
 </layout>

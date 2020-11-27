@@ -55,6 +55,7 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
         // recycler view adapter
         adapter = new RecyclerViewDataAdapter(viewModel.getShoppingLists(), R.layout.shopping_list_row);
+        adapter.setHasStableIds(true);
         binding.rvShoppingLists.setAdapter(adapter);
 
         // init RecyclerView
