@@ -44,4 +44,21 @@ public interface ProductDao {
      */
     @Query("UPDATE product SET checked = :checked WHERE productId = :productId")
     void updateChecked(String productId, boolean checked);
+
+    /**
+     * Update the title of a product
+     *
+     * @param productId    id of the product
+     * @param title      title to be updated
+     */
+    @Query("UPDATE product SET title = :title WHERE productId = :productId")
+    void updateTitle(String productId, String title);
+
+    /**
+     * Delete a product by id.
+     *
+     * @return the number of products deleted. This should always be 1.
+     */
+    @Query("DELETE FROM product WHERE productId = :productid")
+    int deleteProductById(String productid);
 }

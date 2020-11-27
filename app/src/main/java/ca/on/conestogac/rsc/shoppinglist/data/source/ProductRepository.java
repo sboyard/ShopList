@@ -3,12 +3,11 @@ package ca.on.conestogac.rsc.shoppinglist.data.source;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
 
@@ -47,6 +46,24 @@ public class ProductRepository implements ProductDataSource {
     public void updateProductChecked(@NotNull String productId, boolean checked) {
         Runnable runnable = () -> {
             db.productsDao().updateChecked(productId, checked);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
+    public void updateProductTitle(@NotNull String productId, @NotNull String title) {
+        Runnable runnable = () -> {
+            db.productsDao().updateTitle(productId, title);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
+    public void deleteProduct(@NonNull String productId) {
+        Runnable runnable = () -> {
+            db.productsDao().deleteProductById(productId);
         };
         Thread thread = new Thread(runnable);
         thread.start();

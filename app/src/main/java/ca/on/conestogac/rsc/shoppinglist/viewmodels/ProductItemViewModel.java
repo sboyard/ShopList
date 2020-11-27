@@ -1,10 +1,12 @@
 package ca.on.conestogac.rsc.shoppinglist.viewmodels;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
+import androidx.room.util.StringUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -25,6 +27,7 @@ public class ProductItemViewModel extends ObservableViewModel {
     private String productId;
     private boolean checked;
     private String title;
+    private boolean editMode;
 
     public ProductItemViewModel(Context context, ApplicationDbRepository db) {
         this.context = context;
@@ -54,6 +57,10 @@ public class ProductItemViewModel extends ObservableViewModel {
         modelObservable.set(product);
     }
 
+    public String getProductId() {
+        return productId;
+    }
+
     @Bindable
     public boolean isChecked() {
         return checked;
@@ -77,12 +84,38 @@ public class ProductItemViewModel extends ObservableViewModel {
 
     @Bindable
     public void setTitle(String title) {
-        this.title = title;
-        notifyPropertyChanged(BR.title);
-        // TODO: update DB instance
+        if (!TextUtils.isEmpty(title)) {
+            // edit
+            this.title = title;
+            notifyPropertyChanged(BR.title);
+            db.products().updateProductTitle(productId, title);
+        } else {
+            // delete
+            itemListener.get().onItemRemove(this);
+        }
+    }
+
+    @Bindable
+    public boolean getEditMode() {
+        return editMode;
+    }
+
+    private void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+        notifyPropertyChanged(BR.editMode);
+    }
+
+    public void onFocusChange(boolean hasFocus) {
+        setEditMode(hasFocus);
+    }
+
+    public void onRemoveClicked() {
+        if (itemListener.get() != null) {
+            itemListener.get().onItemRemove(this);
+        }
     }
 
     public void onClicked() {
-
+        //setEditMode(!editMode);
     }
 }
