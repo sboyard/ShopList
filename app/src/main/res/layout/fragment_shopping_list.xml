@@ -47,15 +47,14 @@
 
             <ImageButton
                 android:id="@+id/imageButton_new_shopping_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.onAddShoppingListClicked()}"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 android:backgroundTint="?android:attr/colorBackground"
-                android:scaleType="centerCrop"
-                android:tint="@android:color/background_dark"
-                app:srcCompat="@android:drawable/ic_menu_add"
-                android:onClick="@{() -> viewModel.onAddShoppingListClicked()}"
-            />
+                android:tint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_plus" />
 
         </LinearLayout>
 
