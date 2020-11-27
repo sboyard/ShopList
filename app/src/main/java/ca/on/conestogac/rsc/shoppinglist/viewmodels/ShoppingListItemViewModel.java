@@ -1,6 +1,7 @@
 package ca.on.conestogac.rsc.shoppinglist.viewmodels;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
@@ -9,6 +10,7 @@ import androidx.databinding.ObservableField;
 import java.lang.ref.WeakReference;
 
 import ca.on.conestogac.rsc.shoppinglist.BR;
+import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
@@ -17,6 +19,7 @@ import ca.on.conestogac.rsc.shoppinglist.interfaces.ItemListener;
 public class ShoppingListItemViewModel extends ObservableViewModel {
     private final ObservableField<ShoppingListCounts> modelObservable = new ObservableField<>();
     private final ApplicationDbRepository db;
+    private final Context context;
 
     private WeakReference<ItemListener<ShoppingListItemViewModel>> itemListener;
 
@@ -27,6 +30,7 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
     private int checkedCount;
 
     public ShoppingListItemViewModel(Context context, ApplicationDbRepository db) {
+        this.context = context;
         this.db = db;
 
         modelObservable.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
@@ -38,7 +42,9 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
                     title = shoppingList.getTitle();
                     checkedCount = shoppingList.getCheckedCount();
                     totalCount = shoppingList.getTotalCount();
+                    notifyPropertyChanged(BR.icon);
                     notifyPropertyChanged(BR.title);
+                    notifyPropertyChanged(BR.description);
                 }
             }
         });
@@ -76,6 +82,24 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
         this.title = title;
         notifyPropertyChanged(BR.title);
         // TODO : Update DB instance
+    }
+
+    @Bindable
+    public int getIcon() {
+        if (totalCount > 0 && checkedCount == totalCount) {
+            return R.drawable.ic_check;
+        }
+        return R.drawable.ic_shopping_cart;
+    }
+
+    @Bindable
+    public int getDescription() {
+        if (totalCount == 0) {
+            return R.string.empty;
+        } else if (checkedCount == totalCount) {
+            return R.string.done;
+        }
+        return 0;
     }
 
     public void onClicked() {

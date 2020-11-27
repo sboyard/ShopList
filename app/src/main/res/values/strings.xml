@@ -7,4 +7,6 @@
     <string name="name_required">A name is required</string>
     <string name="list_deleted">Shopping list was deleted</string>
     <string name="product_deleted">Product was deleted</string>
+    <string name="empty">Empty</string>
+    <string name="done">Done</string>
 </resources>
