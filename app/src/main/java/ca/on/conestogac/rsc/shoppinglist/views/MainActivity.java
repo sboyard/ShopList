@@ -1,10 +1,15 @@
 package ca.on.conestogac.rsc.shoppinglist.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import ca.on.conestogac.rsc.shoppinglist.R;
+import ca.on.conestogac.rsc.shoppinglist.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +24,28 @@ public class MainActivity extends AppCompatActivity {
                     .beginTransaction()
                     .add(R.id.main_content, fragment)
                     .commit();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_setting, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case  R.id.menu_setting:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+//            case R.id.menu_statistics:
+//                Intent intent = new Intent(getApplicationContext(), StatsActivity.class);
+//
+//                startActivity(intent);
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
