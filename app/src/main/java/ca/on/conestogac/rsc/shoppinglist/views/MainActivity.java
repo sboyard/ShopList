@@ -2,8 +2,11 @@ package ca.on.conestogac.rsc.shoppinglist.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,10 +14,23 @@ import android.view.MenuItem;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.SettingsActivity;
 
+import static android.view.View.VISIBLE;
+
 public class MainActivity extends AppCompatActivity {
+
+    private boolean darkThemeOn;
+    private SharedPreferences sharedPref;
+    private boolean creatingActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        creatingActivity = true;
+
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        setDarkThemeOn(darkThemeOn = sharedPref.getBoolean("theme", false));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_host);
 
@@ -25,6 +41,17 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.main_content, fragment)
                     .commit();
         }
+    }
+
+    protected void onResume() {
+
+        boolean darkTheme = sharedPref.getBoolean("theme", false);
+        if (darkTheme != this.darkThemeOn) {
+            this.darkThemeOn = darkTheme;
+            recreate();
+        }
+        creatingActivity = false;
+        super.onResume();
     }
 
     @Override
@@ -48,4 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void setDarkThemeOn(boolean darkThemeOn) {
+        if (darkThemeOn) {
+            setTheme(R.style.DarkAppTheme);
+        } else      {
+            setTheme(R.style.AppTheme);
+        }
+    }
+
 }

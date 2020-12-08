@@ -5,3 +5,11 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
 />
+
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_margin="16dp"
+    android:clickable="true"
+    android:src="@drawable/ic_add_circle_24px" />
