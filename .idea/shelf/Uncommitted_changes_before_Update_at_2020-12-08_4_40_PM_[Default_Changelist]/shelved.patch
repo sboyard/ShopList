@@ -1,0 +1,274 @@
+Index: app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.on.conestogac.rsc.shoppinglist.views;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.Menu;\r\nimport android.view.MenuItem;\r\n\r\nimport ca.on.conestogac.rsc.shoppinglist.R;\r\nimport ca.on.conestogac.rsc.shoppinglist.SettingsActivity;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.main_host);\r\n\r\n        if (savedInstanceState == null) {\r\n            ShoppingListFragment fragment = new ShoppingListFragment();\r\n            getSupportFragmentManager()\r\n                    .beginTransaction()\r\n                    .add(R.id.main_content, fragment)\r\n                    .commit();\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public boolean onCreateOptionsMenu(Menu menu) {\r\n        getMenuInflater().inflate(R.menu.shopping_list_menu, menu);\r\n        return true;\r\n    }\r\n\r\n    @Override\r\n    public boolean onOptionsItemSelected(@NonNull MenuItem item) {\r\n        switch (item.getItemId()) {\r\n            case  R.id.menu_settings:\r\n                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));\r\n                return true;\r\n//            case R.id.menu_statistics:\r\n//                Intent intent = new Intent(getApplicationContext(), StatsActivity.class);\r\n//\r\n//                startActivity(intent);\r\n//                return true;\r\n            default:\r\n                return super.onOptionsItemSelected(item);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java	(date 1607186745277)
+@@ -2,8 +2,11 @@
+ 
+ import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AppCompatActivity;
++import androidx.preference.PreferenceManager;
++import com.google.android.material.floatingactionbutton.FloatingActionButton;
+ 
+ import android.content.Intent;
++import android.content.SharedPreferences;
+ import android.os.Bundle;
+ import android.view.Menu;
+ import android.view.MenuItem;
+@@ -11,10 +14,23 @@
+ import ca.on.conestogac.rsc.shoppinglist.R;
+ import ca.on.conestogac.rsc.shoppinglist.SettingsActivity;
+ 
++import static android.view.View.VISIBLE;
++
+ public class MainActivity extends AppCompatActivity {
+ 
++    private boolean darkThemeOn;
++    private SharedPreferences sharedPref;
++    private boolean creatingActivity = false;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
++
++        creatingActivity = true;
++
++        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
++        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
++        setDarkThemeOn(darkThemeOn = sharedPref.getBoolean("theme", false));
++
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.main_host);
+ 
+@@ -27,6 +43,17 @@
+         }
+     }
+ 
++    protected void onResume() {
++
++        boolean darkTheme = sharedPref.getBoolean("theme", false);
++        if (darkTheme != this.darkThemeOn) {
++            this.darkThemeOn = darkTheme;
++            recreate();
++        }
++        creatingActivity = false;
++        super.onResume();
++    }
++
+     @Override
+     public boolean onCreateOptionsMenu(Menu menu) {
+         getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
+@@ -48,4 +75,13 @@
+                 return super.onOptionsItemSelected(item);
+         }
+     }
++
++    private void setDarkThemeOn(boolean darkThemeOn) {
++        if (darkThemeOn) {
++            setTheme(R.style.DarkAppTheme);
++        } else      {
++            setTheme(R.style.AppTheme);
++        }
++    }
++
+ }
+Index: app/src/main/java/ca/on/conestogac/rsc/shoppinglist/SettingsActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.on.conestogac.rsc.shoppinglist;\r\n\r\nimport android.os.Bundle;\r\nimport android.view.MenuItem;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.app.ActionBar;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.preference.PreferenceFragmentCompat;\r\n\r\npublic class SettingsActivity extends AppCompatActivity {\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.settings_activity);\r\n        if (savedInstanceState == null) {\r\n            getSupportFragmentManager()\r\n                    .beginTransaction()\r\n                    .replace(R.id.menu_settings, new SettingsFragment())\r\n                    .commit();\r\n        }\r\n        ActionBar actionBar = getSupportActionBar();\r\n        if (actionBar != null) {\r\n            actionBar.setDisplayHomeAsUpEnabled(true);\r\n        }\r\n    }\r\n\r\n    public static class SettingsFragment extends PreferenceFragmentCompat {\r\n        @Override\r\n        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {\r\n            setPreferencesFromResource(R.xml.root_preferences, rootKey);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public boolean onOptionsItemSelected(@NonNull MenuItem item) {\r\n        boolean ret = true;\r\n        switch (item.getItemId()) {\r\n            case android.R.id.home:\r\n                super.onBackPressed();\r\n                break;\r\n            default :\r\n                ret = super.onOptionsItemSelected(item);\r\n        }\r\n        return super.onOptionsItemSelected(item);\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ca/on/conestogac/rsc/shoppinglist/SettingsActivity.java	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/java/ca/on/conestogac/rsc/shoppinglist/SettingsActivity.java	(date 1607184466944)
+@@ -1,5 +1,6 @@
+ package ca.on.conestogac.rsc.shoppinglist;
+ 
++import android.content.SharedPreferences;
+ import android.os.Bundle;
+ import android.view.MenuItem;
+ 
+@@ -7,9 +8,12 @@
+ import androidx.appcompat.app.ActionBar;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.preference.PreferenceFragmentCompat;
++import androidx.preference.PreferenceManager;
+ 
+ public class SettingsActivity extends AppCompatActivity {
+ 
++    private SharedPreferences sharedPref;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+@@ -24,6 +28,7 @@
+         if (actionBar != null) {
+             actionBar.setDisplayHomeAsUpEnabled(true);
+         }
++        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+     }
+ 
+     public static class SettingsFragment extends PreferenceFragmentCompat {
+Index: app/src/main/res/layout/main_host.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<FrameLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:id=\"@+id/main_content\"\r\n    android:layout_height=\"match_parent\"\r\n    android:layout_width=\"match_parent\"\r\n/>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/main_host.xml	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/res/layout/main_host.xml	(date 1607463295028)
+@@ -5,3 +5,11 @@
+     android:layout_height="match_parent"
+     android:layout_width="match_parent"
+ />
++
++<com.google.android.material.floatingactionbutton.FloatingActionButton
++    android:layout_width="wrap_content"
++    android:layout_height="wrap_content"
++    android:layout_gravity="bottom"
++    android:layout_margin="16dp"
++    android:clickable="true"
++    android:src="@drawable/ic_add_circle_24px" />
+Index: app/src/main/res/drawable/ic_add_circle_24px.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"24dp\"\r\n    android:height=\"24dp\"\r\n    android:viewportWidth=\"24\"\r\n    android:viewportHeight=\"24\">\r\n  <path\r\n      android:fillColor=\"#FF000000\"\r\n      android:pathData=\"M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM17,13h-4v4h-2v-4L7,13v-2h4L11,7h2v4h4v2z\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/drawable/ic_add_circle_24px.xml	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/res/drawable/ic_add_circle_24px.xml	(date 1607201815011)
+@@ -4,6 +4,6 @@
+     android:viewportWidth="24"
+     android:viewportHeight="24">
+   <path
+-      android:fillColor="#FF000000"
++      android:fillColor="#ffff0000"
+       android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM17,13h-4v4h-2v-4L7,13v-2h4L11,7h2v4h4v2z"/>
+ </vector>
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <style name=\"AppTheme\" parent=\"Theme.AppCompat.Light\">\r\n        <item name=\"colorPrimary\">@color/colorPrimary</item>\r\n        <item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\r\n        <item name=\"colorAccent\">@color/colorAccent</item>\r\n        <item name=\"actionBarStyle\">@style/CustomActionBar</item>\r\n    </style>\r\n\r\n    <style name=\"CustomActionBar\" parent=\"@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse\">\r\n        <item name=\"background\">@color/colorPrimary</item>\r\n        <item name=\"titleTextStyle\">@style/CustomActionBarTitle</item>\r\n    </style>\r\n\r\n    <style name=\"CustomActionBarTitle\" parent=\"@style/TextAppearance.AppCompat.Widget.ActionBar.Title\">\r\n        <item name=\"android:textColor\">@color/colorWhite</item>\r\n    </style>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/styles.xml	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/res/values/styles.xml	(date 1607185872456)
+@@ -14,4 +14,16 @@
+     <style name="CustomActionBarTitle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+         <item name="android:textColor">@color/colorWhite</item>
+     </style>
++
++    <!-- Dark Theme -->
++    <style name="DarkAppTheme" parent="Theme.AppCompat.Light">
++        <!-- Customize your theme here. -->
++        <item name="colorPrimary">@color/colorDarkGrey</item>
++        <item name="colorPrimaryDark">@color/colorDarkGrey</item>
++        <item name="android:textColor">@color/colorWhite</item>
++        <item name="android:background">@color/colorDarkGrey</item>
++        <item name="actionBarStyle">@style/CustomActionBar</item>
++    </style>
++
++
+ </resources>
+\ No newline at end of file
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\r\n\r\nandroid {\r\n    compileSdkVersion 30\r\n    buildToolsVersion \"30.0.2\"\r\n\r\n    defaultConfig {\r\n        applicationId \"ca.on.conestogac.rsc.shoppinglist\"\r\n        minSdkVersion 23\r\n        targetSdkVersion 30\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_1_8\r\n        targetCompatibility JavaVersion.VERSION_1_8\r\n    }\r\n\r\n    buildFeatures {\r\n        dataBinding true\r\n        viewBinding true\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: \"libs\", include: [\"*.jar\"])\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\r\n    implementation 'androidx.recyclerview:recyclerview:1.1.0'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    implementation 'androidx.room:room-runtime:2.2.5'\r\n    implementation 'androidx.preference:preference:1.1.1'\r\n    implementation 'com.google.android.material:material:1.1.0'\r\n    testImplementation 'junit:junit:4.12'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n\r\n    annotationProcessor \"androidx.databinding:databinding-compiler:4.2.0-alpha16\"\r\n    annotationProcessor 'androidx.room:room-compiler:2.2.5'\r\n\r\n    def lifecycle_version = \"2.2.0\"\r\n\r\n    // ViewModel\r\n    implementation \"androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version\"\r\n    // LiveData\r\n    implementation \"androidx.lifecycle:lifecycle-livedata:$lifecycle_version\"\r\n    // Lifecycles only (without ViewModel or LiveData)\r\n    implementation \"androidx.lifecycle:lifecycle-runtime:$lifecycle_version\"\r\n    // Saved state module for ViewModel\r\n    implementation \"androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version\"\r\n    // Annotation processor\r\n    annotationProcessor \"androidx.lifecycle:lifecycle-compiler:$lifecycle_version\"\r\n\r\n    def nav_version = \"2.3.1\"\r\n\r\n    // Java language implementation\r\n    implementation \"androidx.navigation:navigation-fragment:$nav_version\"\r\n    implementation \"androidx.navigation:navigation-ui:$nav_version\"\r\n\r\n    // Feature module Support\r\n    implementation \"androidx.navigation:navigation-dynamic-features-fragment:$nav_version\"\r\n\r\n    // Testing Navigation\r\n    androidTestImplementation \"androidx.navigation:navigation-testing:$nav_version\"\r\n\r\n    // Jetpack Compose Integration\r\n    implementation \"androidx.navigation:navigation-compose:1.0.0-alpha02\"\r\n}\r\n\r\napply plugin: \"androidx.navigation.safeargs\"
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/build.gradle	(date 1607187082488)
+@@ -42,6 +42,7 @@
+     implementation 'androidx.room:room-runtime:2.2.5'
+     implementation 'androidx.preference:preference:1.1.1'
+     implementation 'com.google.android.material:material:1.1.0'
++    implementation 'com.google.android.material:material:1.0.0-rc01'
+     testImplementation 'junit:junit:4.12'
+     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+Index: app/src/main/res/xml/root_preferences.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><PreferenceScreen xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\">\r\n\r\n    <PreferenceCategory app:title=\"@string/sync_header\">\r\n\r\n        <SwitchPreferenceCompat\r\n            android:id=\"@+id/theme\"\r\n            app:key=\"sync\"\r\n            app:summaryOff=\"@string/dark_off\"\r\n            app:summaryOn=\"@string/dark_on\"\r\n            app:title=\"@string/theme\" />\r\n\r\n    </PreferenceCategory>\r\n\r\n</PreferenceScreen>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/xml/root_preferences.xml	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/res/xml/root_preferences.xml	(date 1607463139453)
+@@ -1,11 +1,15 @@
+ <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto">
+ 
++    <PreferenceCategory android:title="Preference category">
++
++    </PreferenceCategory>
+     <PreferenceCategory app:title="@string/sync_header">
+ 
+         <SwitchPreferenceCompat
+             android:id="@+id/theme"
+-            app:key="sync"
++            app:defaultValue="false"
++            app:key="theme"
+             app:summaryOff="@string/dark_off"
+             app:summaryOn="@string/dark_on"
+             app:title="@string/theme" />
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#Sat Nov 21 13:27:01 EST 2020\r\ndistributionBase=GRADLE_USER_HOME\r\ndistributionPath=wrapper/dists\r\nzipStoreBase=GRADLE_USER_HOME\r\nzipStorePath=wrapper/dists\r\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-6.1.1-all.zip\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- gradle/wrapper/gradle-wrapper.properties	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ gradle/wrapper/gradle-wrapper.properties	(date 1607187238863)
+@@ -1,6 +1,6 @@
+-#Sat Nov 21 13:27:01 EST 2020
++#Sat Dec 05 11:53:58 EST 2020
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-6.1.1-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-bin.zip
+Index: app/src/main/res/values/colors.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n    <color name=\"colorPrimary\">#3c953b</color>\r\n    <color name=\"colorPrimaryDark\">#337d32</color>\r\n    <color name=\"colorAccent\">#83c73f</color>\r\n    <color name=\"colorWhite\">#FFFFFF</color>\r\n    <color name=\"colorLightGray\">#d3d3d3</color>\r\n    <color name=\"colorMediumGray\">#838383</color>\r\n    <color name=\"colorLightRed\">#f38383</color>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/colors.xml	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ app/src/main/res/values/colors.xml	(date 1607183485239)
+@@ -7,4 +7,5 @@
+     <color name="colorLightGray">#d3d3d3</color>
+     <color name="colorMediumGray">#838383</color>
+     <color name="colorLightRed">#f38383</color>
++    <color name="colorDarkGrey">#2a2c2e</color>
+ </resources>
+\ No newline at end of file
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\nbuildscript {\r\n    repositories {\r\n        google()\r\n        jcenter()\r\n    }\r\n    dependencies {\r\n        def nav_version = \"2.3.1\"\r\n\r\n        classpath \"com.android.tools.build:gradle:4.0.2\"\r\n\r\n        classpath \"androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version\"\r\n\r\n        // NOTE: Do not place your application dependencies here; they belong\r\n        // in the individual module build.gradle files\r\n    }\r\n}\r\n\r\nallprojects {\r\n    repositories {\r\n        google()\r\n        jcenter()\r\n    }\r\n}\r\n\r\ntask clean(type: Delete) {\r\n    delete rootProject.buildDir\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.gradle	(revision 02f236e046479e59bec5b2d8196c5f4db274088d)
++++ build.gradle	(date 1607201850670)
+@@ -7,7 +7,7 @@
+     dependencies {
+         def nav_version = "2.3.1"
+ 
+-        classpath "com.android.tools.build:gradle:4.0.2"
++        classpath 'com.android.tools.build:gradle:4.1.1'
+ 
+         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+ 

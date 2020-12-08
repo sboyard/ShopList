@@ -1,11 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory android:title="Preference category">
+
+    </PreferenceCategory>
     <PreferenceCategory app:title="@string/sync_header">
 
         <SwitchPreferenceCompat
             android:id="@+id/theme"
-            app:key="sync"
+            app:defaultValue="false"
+            app:key="theme"
             app:summaryOff="@string/dark_off"
             app:summaryOn="@string/dark_on"
             app:title="@string/theme" />
