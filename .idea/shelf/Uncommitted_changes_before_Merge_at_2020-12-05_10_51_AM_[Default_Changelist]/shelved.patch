@@ -1,0 +1,119 @@
+Index: app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ca.on.conestogac.rsc.shoppinglist.views;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.Menu;\r\nimport android.view.MenuItem;\r\n\r\nimport ca.on.conestogac.rsc.shoppinglist.R;\r\nimport ca.on.conestogac.rsc.shoppinglist.SettingsActivity;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.main_host);\r\n\r\n        if (savedInstanceState == null) {\r\n            ShoppingListFragment fragment = new ShoppingListFragment();\r\n            getSupportFragmentManager()\r\n                    .beginTransaction()\r\n                    .add(R.id.main_content, fragment)\r\n                    .commit();\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public boolean onCreateOptionsMenu(Menu menu) {\r\n        getMenuInflater().inflate(R.menu.menu_setting, menu);\r\n        return true;\r\n    }\r\n\r\n    @Override\r\n    public boolean onOptionsItemSelected(@NonNull MenuItem item) {\r\n        switch (item.getItemId()) {\r\n            case  R.id.menu_setting:\r\n                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));\r\n                return true;\r\n//            case R.id.menu_statistics:\r\n//                Intent intent = new Intent(getApplicationContext(), StatsActivity.class);\r\n//\r\n//                startActivity(intent);\r\n//                return true;\r\n            default:\r\n                return super.onOptionsItemSelected(item);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java	(revision ac3c19ed073e101b8b6b2083dfb549a95cba99d8)
++++ app/src/main/java/ca/on/conestogac/rsc/shoppinglist/views/MainActivity.java	(date 1607183252332)
+@@ -2,8 +2,10 @@
+ 
+ import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AppCompatActivity;
++import androidx.preference.PreferenceManager;
+ 
+ import android.content.Intent;
++import android.content.SharedPreferences;
+ import android.os.Bundle;
+ import android.view.Menu;
+ import android.view.MenuItem;
+@@ -11,10 +13,23 @@
+ import ca.on.conestogac.rsc.shoppinglist.R;
+ import ca.on.conestogac.rsc.shoppinglist.SettingsActivity;
+ 
++import static android.view.View.VISIBLE;
++
+ public class MainActivity extends AppCompatActivity {
+ 
++    private boolean darkThemeOn;
++    private SharedPreferences sharedPref;
++    private boolean creatingActivity = false;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
++
++        creatingActivity = true;
++
++        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
++        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
++        setDarkThemeOn(darkThemeOn = sharedPref.getBoolean("theme", false));
++
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.main_host);
+ 
+@@ -27,6 +42,17 @@
+         }
+     }
+ 
++    protected void onResume() {
++
++        boolean darkTheme = sharedPref.getBoolean("theme", false);
++        if (darkTheme != this.darkThemeOn) {
++            this.darkThemeOn = darkTheme;
++            recreate();
++        }
++        creatingActivity = false;
++        super.onResume();
++    }
++
+     @Override
+     public boolean onCreateOptionsMenu(Menu menu) {
+         getMenuInflater().inflate(R.menu.menu_setting, menu);
+@@ -48,4 +74,13 @@
+                 return super.onOptionsItemSelected(item);
+         }
+     }
++
++    private void setDarkThemeOn(boolean darkThemeOn) {
++        if (darkThemeOn) {
++            setTheme(R.style.DarkAppTheme);
++        } else      {
++            setTheme(R.style.AppTheme);
++        }
++    }
++
+ }
+Index: app/src/main/res/values/colors.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n    <color name=\"colorPrimary\">#3c953b</color>\r\n    <color name=\"colorPrimaryDark\">#337d32</color>\r\n    <color name=\"colorAccent\">#83c73f</color>\r\n    <color name=\"colorWhite\">#FFFFFF</color>\r\n    <color name=\"colorLightGray\">#d3d3d3</color>\r\n    <color name=\"colorMediumGray\">#838383</color>\r\n    <color name=\"colorLightRed\">#f38383</color>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/colors.xml	(revision ac3c19ed073e101b8b6b2083dfb549a95cba99d8)
++++ app/src/main/res/values/colors.xml	(date 1607182955885)
+@@ -7,4 +7,5 @@
+     <color name="colorLightGray">#d3d3d3</color>
+     <color name="colorMediumGray">#838383</color>
+     <color name="colorLightRed">#f38383</color>
++    <color name="colorDarkGrey">#2a2c2e</color>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <style name=\"AppTheme\" parent=\"Theme.AppCompat.Light\">\r\n        <item name=\"colorPrimary\">@color/colorPrimary</item>\r\n        <item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\r\n        <item name=\"colorAccent\">@color/colorAccent</item>\r\n        <item name=\"actionBarStyle\">@style/CustomActionBar</item>\r\n    </style>\r\n\r\n    <style name=\"CustomActionBar\" parent=\"@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse\">\r\n        <item name=\"background\">@color/colorPrimary</item>\r\n        <item name=\"titleTextStyle\">@style/CustomActionBarTitle</item>\r\n    </style>\r\n\r\n    <style name=\"CustomActionBarTitle\" parent=\"@style/TextAppearance.AppCompat.Widget.ActionBar.Title\">\r\n        <item name=\"android:textColor\">@color/colorWhite</item>\r\n    </style>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/styles.xml	(revision ac3c19ed073e101b8b6b2083dfb549a95cba99d8)
++++ app/src/main/res/values/styles.xml	(date 1607182938051)
+@@ -14,4 +14,16 @@
+     <style name="CustomActionBarTitle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+         <item name="android:textColor">@color/colorWhite</item>
+     </style>
++
++    <!-- Dark Theme -->
++    <style name="DarkAppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
++        <!-- Customize your theme here. -->
++        <item name="colorPrimary">@color/colorDarkGrey</item>
++        <item name="colorPrimaryDark">@color/colorDarkGrey</item>
++        <item name="android:layout">@color/colorDarkGrey</item>
++        <item name="android:windowBackground">@color/colorDarkGrey</item>
++        <item name="android:itemBackground">@color/colorDarkGrey</item>
++        <item name="android:textColor">@color/colorWhite</item>
++        <item name="android:background">@color/colorDarkGrey</item>
++    </style>
+ </resources>
+\ No newline at end of file
