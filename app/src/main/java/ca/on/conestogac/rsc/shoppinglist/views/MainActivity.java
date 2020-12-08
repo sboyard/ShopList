@@ -29,14 +29,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_setting, menu);
+        getMenuInflater().inflate(R.menu.shopping_list_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case  R.id.menu_setting:
+            case  R.id.menu_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
 //            case R.id.menu_statistics:

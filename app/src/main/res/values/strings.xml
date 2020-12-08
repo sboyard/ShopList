@@ -28,4 +28,8 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="settings">Settings</string>
     <string name="statistics">Statistics</string>
+    <string name="theme">Dark Theme</string>
+    <string name="dark_on">Dark theme ON</string>
+    <string name="dark_off">Dark theme OFF</string>
+    <string name="reset">Reset</string>
 </resources>
