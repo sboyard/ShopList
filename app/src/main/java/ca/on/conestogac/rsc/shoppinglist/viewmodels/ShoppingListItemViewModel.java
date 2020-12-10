@@ -1,7 +1,6 @@
 package ca.on.conestogac.rsc.shoppinglist.viewmodels;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
@@ -12,11 +11,14 @@ import java.lang.ref.WeakReference;
 import ca.on.conestogac.rsc.shoppinglist.BR;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
+import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingList;
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
+import ca.on.conestogac.rsc.shoppinglist.data.source.ShoppingListsDataSource;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ItemListener;
 
-public class ShoppingListItemViewModel extends ObservableViewModel {
+public class ShoppingListItemViewModel extends ObservableViewModel
+        implements ShoppingListsDataSource.LoadShoppingListCallback {
     private final ObservableField<ShoppingListCounts> modelObservable = new ObservableField<>();
     private final ApplicationDbRepository db;
     private final Context context;
@@ -26,8 +28,11 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
     // model values
     private String shoppingListId;
     private String title;
+    private String editingTitle;
     private int totalCount;
     private int checkedCount;
+
+    private boolean editing;
 
     public ShoppingListItemViewModel(Context context, ApplicationDbRepository db) {
         this.context = context;
@@ -40,6 +45,7 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
                 if (shoppingList != null) {
                     shoppingListId = shoppingList.getId();
                     title = shoppingList.getTitle();
+                    editingTitle = title;
                     checkedCount = shoppingList.getCheckedCount();
                     totalCount = shoppingList.getTotalCount();
                     notifyPropertyChanged(BR.icon);
@@ -81,7 +87,34 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
     public void setTitle(String title) {
         this.title = title;
         notifyPropertyChanged(BR.title);
-        // TODO : Update DB instance
+    }
+
+    @Bindable
+    public String getEditingTitle() {
+        return editingTitle;
+    }
+
+    @Bindable
+    public void setEditingTitle(String title) {
+        this.editingTitle = title;
+        notifyPropertyChanged(BR.editingTitle);
+        notifyPropertyChanged(BR.validEditingTitle);
+    }
+
+    @Bindable
+    public boolean isEditing() {
+        return this.editing;
+    }
+
+    @Bindable
+    public void setEditing(boolean editing) {
+        this.editing = editing;
+        notifyPropertyChanged(BR.editing);
+    }
+
+    @Bindable
+    public boolean isValidEditingTitle() {
+        return title.length() > 0;
     }
 
     @Bindable
@@ -103,8 +136,16 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
     }
 
     public void onClicked() {
-        if (itemListener.get() != null) {
+        if (!isEditing() && itemListener.get() != null) {
             itemListener.get().onItemClick(this);
+        }
+    }
+
+    public void onEditClicked() {
+        setEditing(true);
+
+        if (itemListener.get() != null) {
+            itemListener.get().onStartEditingItem(this);
         }
     }
 
@@ -113,5 +154,54 @@ public class ShoppingListItemViewModel extends ObservableViewModel {
         if (itemListener.get() != null) {
             itemListener.get().onItemRemove(this);
         }
+    }
+
+    public void onSaveClicked() {
+        if (title.length() > 0) {
+            setEditing(false);
+            setTitle(editingTitle);
+
+            db.shoppingLists().updateShoppingListTitle(shoppingListId, title);
+            db.shoppingLists().getShoppingList(shoppingListId, this);
+
+            if (itemListener.get() != null) {
+                itemListener.get().onStopEditingItem();
+            }
+        } else {
+            onUndoClicked();
+        }
+    }
+
+    public void onUndoClicked() {
+        if (editing) {
+            setEditing(false);
+            setEditingTitle(title);
+
+            if (itemListener.get() != null) {
+                itemListener.get().onStopEditingItem();
+            }
+        }
+    }
+
+    public int getSortIndex() {
+        if (modelObservable.get() != null) {
+            return modelObservable.get().getSortIndex();
+        }
+        return 0;
+    }
+
+    @Override
+    public void onShoppingListLoaded(ShoppingList shoppingList) {
+
+    }
+
+    @Override
+    public void onShoppingListCountsLoaded(ShoppingListCounts shoppingList) {
+        bindModel(shoppingList);
+    }
+
+    @Override
+    public void onDataNotAvailable() {
+
     }
 }

@@ -17,6 +17,7 @@ import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
 import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingList;
+import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 import ca.on.conestogac.rsc.shoppinglist.data.source.ShoppingListsDataSource.LoadShoppingListCallback;
 import ca.on.conestogac.rsc.shoppinglist.data.source.ProductDataSource.LoadProductsCallback;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
@@ -33,6 +34,7 @@ public class ProductListsViewModel extends ObservableViewModel
 
     private String shoppingListId;
     private String textTitleNewProduct;
+    private boolean empty;
     public final ObservableField<String> shoppingListTitle = new ObservableField<>();
 
     public ProductListsViewModel(Context context, ApplicationDbRepository db) {
@@ -79,9 +81,14 @@ public class ProductListsViewModel extends ObservableViewModel
         notifyPropertyChanged(BR.textTitleNewProduct);
     }
 
+    private void updateIsEmpty() {
+        empty = products.size() == 0;
+        notifyPropertyChanged(BR.empty);
+    }
+
     @Bindable
     public boolean isEmpty() {
-        return products.size() == 0;
+        return empty;
     }
 
     @Bindable
@@ -115,6 +122,7 @@ public class ProductListsViewModel extends ObservableViewModel
         notifyPropertyChanged(BR.empty);
         notifyPropertyChanged(BR.noProductsLabel);
         notifyPropertyChanged(BR.noProductsIcon);
+        updateIsEmpty();
     }
 
     private ProductItemViewModel createProductItem(Product product) {
@@ -149,6 +157,11 @@ public class ProductListsViewModel extends ObservableViewModel
     @Override
     public void onShoppingListLoaded(ShoppingList shoppingList) {
         modelObservable.set(shoppingList);
+    }
+
+    @Override
+    public void onShoppingListCountsLoaded(ShoppingListCounts shoppingList) {
+
     }
 
     @Override
@@ -192,6 +205,16 @@ public class ProductListsViewModel extends ObservableViewModel
 
     @Override
     public void onItemClick(@NotNull ProductItemViewModel item) {
+
+    }
+
+    @Override
+    public void onStartEditingItem(ProductItemViewModel item) {
+
+    }
+
+    @Override
+    public void onStopEditingItem() {
 
     }
 }

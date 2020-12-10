@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListItemViewModel"/>
@@ -33,21 +34,39 @@
             android:onClick="@{() -> viewModel.onClicked()}">
 
             <LinearLayout
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:layout_width="0dp">
 
                 <TextView
                     android:id="@+id/textView_title"
+                    android:text="@{viewModel.title, default=`Title Placeholder`}"
+                    android:visibility="@{viewModel.editing ? View.GONE : View.VISIBLE, default=visible}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{viewModel.title, default=`Title Placeholder`}"
                     android:textSize="20sp"
                     android:textStyle="bold"
                 />
 
+                <EditText
+                    android:id="@+id/textView_editTitle"
+                    android:text="@={viewModel.editingTitle, default=`Title Placeholder`}"
+                    android:visibility="@{viewModel.editing ? View.VISIBLE : View.GONE, default=gone}"
+                    android:onActionDone="@{() -> viewModel.onSaveClicked()}"
+                    android:requestFocus="@{viewModel.editing}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/name_required"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:autofillHints=""
+                />
+
                 <LinearLayout
+                    android:visibility="@{viewModel.editing ? View.GONE : View.VISIBLE, default=visible}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
@@ -74,8 +93,10 @@
 
             <ImageButton
                 android:id="@+id/imageButton_edit"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:onClick="@{() -> viewModel.onEditClicked()}"
+                android:visibility="@{viewModel.editing ? View.GONE : View.VISIBLE, default=visible}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:scaleType="fitXY"
                 android:backgroundTint="?android:attr/colorBackground"
                 android:tint="?android:attr/foregroundTint"
@@ -84,12 +105,35 @@
             <ImageButton
                 android:id="@+id/imageButton_delete"
                 android:onClick="@{() -> viewModel.onRemoveClicked()}"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:visibility="@{viewModel.editing ? View.GONE : View.VISIBLE, default=visible}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:scaleType="fitXY"
                 android:backgroundTint="?android:attr/colorBackground"
                 android:tint="?android:attr/foregroundTint"
                 app:srcCompat="@drawable/ic_delete" />
+
+            <ImageButton
+                android:id="@+id/imageButton_save"
+                android:onClick="@{() -> viewModel.onSaveClicked()}"
+                android:visibility="@{viewModel.editing ? (viewModel.validEditingTitle ? View.VISIBLE : View.GONE) : View.GONE, default=visible}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="fitXY"
+                android:backgroundTint="?android:attr/colorBackground"
+                android:tint="?android:colorAccent"
+                app:srcCompat="@drawable/ic_check" />
+
+            <ImageButton
+                android:id="@+id/imageButton_undo"
+                android:onClick="@{() -> viewModel.onUndoClicked()}"
+                android:visibility="@{viewModel.editing ? View.VISIBLE : View.GONE, default=visible}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="fitXY"
+                android:backgroundTint="?android:attr/colorBackground"
+                android:tint="@color/colorLightRed"
+                app:srcCompat="@drawable/ic_undo_arrow" />
 
         </LinearLayout>
 

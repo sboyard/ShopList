@@ -48,8 +48,9 @@
 
             <ImageButton
                 android:id="@+id/imageButton_delete"
-                android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE, default=visible}"
+                android:animatedVisibility="@{viewModel.editMode}"
                 android:onClick="@{() -> viewModel.onRemoveClicked()}"
+                android:animatedVisibilityDuration="@{100}"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:padding="6dp"

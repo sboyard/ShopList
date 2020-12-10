@@ -33,13 +33,25 @@ public interface ShoppingListsDao {
     List<ShoppingListCounts> getShoppingLists();
 
     /**
-     * Select all shoppingList from the shoppingList table by id.
+     * Select a shoppingList from the shoppingList table by id.
      *
      * @param shoppingListId the shoppingList id.
-     * @return all shoppingLists.
+     * @return a shoppingList.
      */
     @Query("SELECT * FROM shoppinglist WHERE shoppinglistid = :shoppingListId")
     ShoppingList getShoppingListById(String shoppingListId);
+
+    /**
+     * Select a shoppingList from the shoppingList table by id with counts.
+     *
+     * @param shoppingListId the shoppingList id.
+     * @return a shoppingList.
+     */
+    @Query("SELECT *, " +
+            "(SELECT COUNT(shoppinglistid) FROM product p WHERE p.shoppinglistid=s.shoppinglistid AND checked=1) checkedCount, " +
+            "(SELECT COUNT(shoppinglistid) FROM product p WHERE p.shoppinglistid=s.shoppinglistid) totalCount " +
+            "FROM shoppinglist s WHERE shoppinglistid = :shoppingListId")
+    ShoppingListCounts getShoppingListCountsById(String shoppingListId);
 
     /**
      * Update a shoppingList.
@@ -49,6 +61,15 @@ public interface ShoppingListsDao {
      */
     @Query("UPDATE shoppinglist SET sortIndex = :sortIndex WHERE shoppinglistid = :shoppingListId")
     void updateShoppingListIndex(String shoppingListId, int sortIndex);
+
+    /**
+     * Update the title of a shoppingList
+     *
+     * @param shoppingListId    id of the shoppingList
+     * @param title             title to be updated
+     */
+    @Query("UPDATE shoppinglist SET title = :title WHERE shoppingListId = :shoppingListId")
+    void updateShoppingListTitle(String shoppingListId, String title);
 
     /**
      * Delete a shoppingList by id.

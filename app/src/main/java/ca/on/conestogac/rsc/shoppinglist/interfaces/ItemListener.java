@@ -7,4 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public interface ItemListener<T extends ViewModel> {
     void onItemRemove(@NotNull T item);
     void onItemClick(@NotNull T item);
+
+    void onStartEditingItem(T item);
+    void onStopEditingItem();
 }

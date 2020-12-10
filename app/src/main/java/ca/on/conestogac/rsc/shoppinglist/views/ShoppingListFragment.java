@@ -1,6 +1,9 @@
 package ca.on.conestogac.rsc.shoppinglist.views;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,14 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
 import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
@@ -35,31 +30,19 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        // title
-        requireActivity().setTitle(R.string.app_name);
-        App app = (App)requireActivity().getApplication();
-
         binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_shopping_list,
                 container,
                 false);
 
+        // title
+        requireActivity().setTitle(R.string.app_name);
+        App app = (App)requireActivity().getApplication();
+
         // view model & binding
         viewModel = new ShoppingListsViewModel(requireContext(), app.getRepository());
         binding.setViewModel(viewModel);
-
-        // get New List editText and performClick on submit button when enter on keyboard is pressed
-        EditText edit_txt = (EditText) binding.textNewShoppingList;
-        edit_txt.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                    (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                ImageButton submitButton = binding.imageButtonNewShoppingList;
-                submitButton.performClick();
-                return true;
-            }
-            return false;
-        });
 
         // drag and drop
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);

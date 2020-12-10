@@ -43,6 +43,8 @@
                     android:padding="8dp"
                     android:singleLine="true"
                     android:text="@={viewModel.textTitleNewShoppingList}"
+                    android:onActionDone="@{() -> viewModel.onAddShoppingListClicked()}"
+                    app:onFocusChangeListener="@{(v, hasFocus) -> viewModel.onAddShoppingListFocusChange(hasFocus)}"
                     android:importantForAutofill="no"
                 />
 
@@ -71,7 +73,7 @@
 
         <LinearLayout
             android:id="@+id/no_shopping_lists"
-            android:visibility="@{viewModel.empty ? View.VISIBLE : View.GONE}"
+            android:animatedVisibility="@{viewModel.empty}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
