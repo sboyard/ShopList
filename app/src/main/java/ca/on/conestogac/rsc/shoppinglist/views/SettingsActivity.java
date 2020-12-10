@@ -1,4 +1,4 @@
-package ca.on.conestogac.rsc.shoppinglist;
+package ca.on.conestogac.rsc.shoppinglist.views;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,14 +10,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-public class SettingsActivity extends AppCompatActivity {
+import ca.on.conestogac.rsc.shoppinglist.R;
+
+public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkTheme = sharedPref.getBoolean("theme", false);
+        setTheme(darkTheme ? R.style.DarkAppTheme : R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        // setup listener on preference change
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -28,7 +39,13 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("theme")) {
+            recreate();
+        }
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {

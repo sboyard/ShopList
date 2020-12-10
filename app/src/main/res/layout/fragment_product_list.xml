@@ -54,16 +54,18 @@
                     android:scaleType="fitXY"
                     android:adjustViewBounds="true"
                     android:backgroundTint="?android:attr/colorBackground"
-                    android:tint="@color/colorAccent"
+                    android:tint="?android:colorAccent"
                     app:srcCompat="@drawable/ic_plus" />
 
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <ca.on.conestogac.rsc.shoppinglist.views.CustomRecyclerView
                 android:id="@+id/rv_products_list"
                 android:visibility="@{viewModel.empty ? View.GONE : View.VISIBLE}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:data="@{viewModel.products}"
+                app:itemLayout="@{@layout/product_row}"
             />
         </LinearLayout>
 
@@ -77,12 +79,12 @@
 
             <ImageView
                 android:id="@+id/no_tasks_icon"
-                app:src="@{viewModel.noProductsIcon}"
+                src="@{viewModel.noProductsIcon}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center"
-                android:tint="@color/colorMediumGray"
+                app:tint="@color/colorMediumGray"
                 android:backgroundTint="?android:attr/colorBackground"
                 />
 

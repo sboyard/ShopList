@@ -51,14 +51,12 @@ public class ProductListsViewModel extends ObservableViewModel
         });
     }
 
-    public void start(String shoppingListId) {
-        this.shoppingListId = shoppingListId;
-        db.shoppingLists().getShoppingList(shoppingListId, this);
-        populateData();
-    }
-
-    public void onViewCreated(ProductListener productListener) {
+    public void onViewCreated(String shoppingListId, ProductListener productListener) {
         this.productListener = productListener;
+
+        // get shoppingList & products from DB
+        db.shoppingLists().getShoppingList(shoppingListId, this);
+        db.products().getProductsByShoppingListId(shoppingListId, this);
     }
 
     public void onViewDestroyed() {
@@ -106,37 +104,46 @@ public class ProductListsViewModel extends ObservableViewModel
             db.products().saveProduct(product);
 
             // update fields
-            addProduct(product);
+            addProduct(createProductItem(product));
             setTextTitleNewProduct("");
         } else {
             productListener.onSnackBarDisplay(context.getString(R.string.name_required));
         }
     }
 
-    private void addProduct(Product product) {
-        ProductItemViewModel itemViewModel = new ProductItemViewModel(context, db);
-        itemViewModel.bindModel(product);
-        itemViewModel.start(this);
-
-        productListener.onProductInserted(products.size());
-        products.add(itemViewModel);
-
+    private void notifyProductsUpdated() {
         notifyPropertyChanged(BR.empty);
         notifyPropertyChanged(BR.noProductsLabel);
         notifyPropertyChanged(BR.noProductsIcon);
     }
 
-    private void addProductRange(List<Product> products) {
-        int fromPosition = this.products.size();
-        for (Product product: products) {
-            addProduct(product);
-        }
-        this.productListener.onProductRangeInserted(fromPosition, this.products.size());
+    private ProductItemViewModel createProductItem(Product product) {
+        ProductItemViewModel productItem = new ProductItemViewModel(context, db);
+        productItem.bindModel(product);
+        productItem.start(this);
+
+        return productItem;
     }
 
-    private void populateData() {
-        // get products from DB
-        db.products().getProductsByShoppingListId(shoppingListId, this);
+    private void addProduct(ProductItemViewModel productItem) {
+        // add
+        products.add(productItem);
+
+        // notify UI
+        productListener.onProductInserted(products.size());
+        notifyProductsUpdated();
+    }
+
+    private void addProductRange(List<Product> products) {
+        // add
+        int fromPosition = this.products.size();
+        for (Product product: products) {
+            this.products.add(createProductItem(product));
+        }
+
+        // notify UI
+        this.productListener.onProductRangeInserted(fromPosition, this.products.size());
+        notifyProductsUpdated();
     }
 
     @Override
@@ -146,9 +153,15 @@ public class ProductListsViewModel extends ObservableViewModel
 
     @Override
     public void onProductsLoaded(List<Product> products) {
-        productListener.onProductRangeRemoved(0, this.products.size());
-        this.products.clear();
+        int toPosition = this.products.size();
+        if (toPosition > 0) {
+            // remove
+            this.products.clear();
 
+            // notify UI
+            productListener.onProductRangeRemoved(0, toPosition);
+        }
+        // add
         addProductRange(products);
     }
 
@@ -159,10 +172,7 @@ public class ProductListsViewModel extends ObservableViewModel
             products.clear();
         }
         modelObservable.set(null);
-
-        notifyPropertyChanged(BR.empty);
-        notifyPropertyChanged(BR.noProductsLabel);
-        notifyPropertyChanged(BR.noProductsIcon);
+        notifyProductsUpdated();
     }
 
     @Override
@@ -174,9 +184,7 @@ public class ProductListsViewModel extends ObservableViewModel
         // notify UI
         productListener.onProductRemoved(index);
         productListener.onSnackBarDisplay(context.getString(R.string.product_deleted));
-
-        notifyPropertyChanged(BR.empty);
-        notifyPropertyChanged(BR.noProductsLabel);
+        notifyProductsUpdated();
 
         // delete from DB
         db.products().deleteProduct(product.getProductId());

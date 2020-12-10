@@ -65,7 +65,8 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
     public void onViewCreated(ShoppingListener shoppingListener) {
         this.shoppingListener = shoppingListener;
-        populateData();
+        // read from DB
+        db.shoppingLists().getShoppingLists(this);
     }
 
     public void onViewDestroyed() {
@@ -80,7 +81,7 @@ public class ShoppingListsViewModel extends ObservableViewModel
             db.shoppingLists().saveShoppingList(shoppingList);
 
             // update fields
-            addShoppingList(shoppingList);
+            addShoppingList(createShoppingListItem(shoppingList));
             setTextTitleNewShoppingList("");
         } else {
             shoppingListener.onSnackBarDisplay(context.getString(R.string.title_required));
@@ -105,49 +106,63 @@ public class ShoppingListsViewModel extends ObservableViewModel
         }
     }
 
-    private void addShoppingList(ShoppingListCounts shoppingList) {
-        ShoppingListItemViewModel itemViewModel = new ShoppingListItemViewModel(context, db);
-        itemViewModel.bindModel(shoppingList);
-        itemViewModel.start(this);
-
-        // add
-        this.shoppingLists.add(itemViewModel);
-
-        // notify UI
-        this.shoppingListener.onShoppingListInserted(shoppingLists.size());
-
+    private void notifyShoppingListsUpdated() {
         notifyPropertyChanged(BR.empty);
         notifyPropertyChanged(BR.noShoppingListsLabel);
     }
 
-    private void addShoppingListRange(List<ShoppingListCounts> shoppingLists) {
-        int fromPosition = this.shoppingLists.size();
-        for (ShoppingListCounts shoppingList: shoppingLists) {
-            addShoppingList(shoppingList);
-        }
-        this.shoppingListener.onShoppingListRangeInserted(fromPosition, this.shoppingLists.size());
+    private ShoppingListItemViewModel createShoppingListItem(ShoppingListCounts shoppingList) {
+        ShoppingListItemViewModel shoppingListItem = new ShoppingListItemViewModel(context, db);
+        shoppingListItem.bindModel(shoppingList);
+        shoppingListItem.start(this);
+
+        return shoppingListItem;
     }
 
-    private void populateData() {
-        // read from DB
-        db.shoppingLists().getShoppingLists(this);
+    private void addShoppingList(ShoppingListItemViewModel shoppingListItem) {
+        // add
+        this.shoppingLists.add(shoppingListItem);
+
+        // notify UI
+        this.shoppingListener.onShoppingListInserted(shoppingLists.size());
+        notifyShoppingListsUpdated();
+    }
+
+    private void addShoppingListRange(List<ShoppingListCounts> shoppingLists) {
+        // add
+        int fromPosition = this.shoppingLists.size();
+        for (ShoppingListCounts shoppingList: shoppingLists) {
+            this.shoppingLists.add(createShoppingListItem(shoppingList));
+        }
+
+        // notify UI
+        this.shoppingListener.onShoppingListRangeInserted(fromPosition, this.shoppingLists.size());
+        notifyShoppingListsUpdated();
     }
 
     @Override
     public void onShoppingListsLoaded(List<ShoppingListCounts> shoppingLists) {
-        shoppingListener.onShoppingListProductRangeRemoved(0, this.shoppingLists.size());
-        this.shoppingLists.clear();
+        int toPosition = this.shoppingLists.size();
+        if (toPosition > 0) {
+            // remove
+            this.shoppingLists.clear();
 
+            // notify UI
+            shoppingListener.onShoppingListProductRangeRemoved(0, toPosition);
+        }
+        // add
         addShoppingListRange(shoppingLists);
     }
 
     @Override
     public void onDataNotAvailable() {
-        shoppingListener.onShoppingListProductRangeRemoved(0, shoppingLists.size());
+        // remove
+        int toPosition = shoppingLists.size();
         this.shoppingLists.clear();
 
-        notifyPropertyChanged(BR.empty);
-        notifyPropertyChanged(BR.noShoppingListsLabel);
+        // notify UI
+        shoppingListener.onShoppingListProductRangeRemoved(0, toPosition);
+        notifyShoppingListsUpdated();
     }
 
     @Override
@@ -159,9 +174,7 @@ public class ShoppingListsViewModel extends ObservableViewModel
         // notify UI
         shoppingListener.onShoppingListRemoved(index);
         shoppingListener.onSnackBarDisplay(context.getString(R.string.list_deleted));
-
-        notifyPropertyChanged(BR.empty);
-        notifyPropertyChanged(BR.noShoppingListsLabel);
+        notifyShoppingListsUpdated();
 
         // delete from DB
         db.shoppingLists().deleteShoppingList(shoppingList.getShoppingListId());
