@@ -7,9 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.KeyEvent;
@@ -23,7 +21,6 @@ import android.widget.ImageButton;
 import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentShoppingListBinding;
-import ca.on.conestogac.rsc.shoppinglist.databinding.RecyclerViewDataAdapter;
 import ca.on.conestogac.rsc.shoppinglist.interfaces.ShoppingListener;
 import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListItemViewModel;
 import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListsViewModel;
@@ -31,7 +28,6 @@ import ca.on.conestogac.rsc.shoppinglist.viewmodels.ShoppingListsViewModel;
 public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
     private FragmentShoppingListBinding binding;
-    private RecyclerViewDataAdapter adapter;
     private ShoppingListsViewModel viewModel;
 
     @Override
@@ -53,16 +49,6 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
         viewModel = new ShoppingListsViewModel(requireContext(), app.getRepository());
         binding.setViewModel(viewModel);
 
-        // recycler view adapter
-        adapter = new RecyclerViewDataAdapter(viewModel.getShoppingLists(), R.layout.shopping_list_row);
-        adapter.setHasStableIds(true);
-        binding.rvShoppingLists.setAdapter(adapter);
-
-        // init RecyclerView
-        RecyclerView recyclerView = binding.rvShoppingLists;
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
         // get New List editText and performClick on submit button when enter on keyboard is pressed
         EditText edit_txt = (EditText) binding.textNewShoppingList;
         edit_txt.setOnEditorActionListener((v, actionId, event) -> {
@@ -77,7 +63,11 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
         // drag and drop
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper.attachToRecyclerView(binding.rvShoppingLists.recyclerView);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
         return binding.getRoot();
     }
@@ -104,11 +94,6 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onDestroyView() {
         viewModel.onViewDestroyed();
         super.onDestroyView();
@@ -121,29 +106,27 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
     @Override
     public void onShoppingListInserted(int position) {
-        adapter.notifyItemInserted(position);
-        binding.rvShoppingLists.scrollToPosition(position);
+        binding.rvShoppingLists.notifyItemInserted(position, true);
     }
 
     @Override
     public void onShoppingListRangeInserted(int fromPosition, int toPosition) {
-        adapter.notifyItemRangeInserted(fromPosition, toPosition);
-        binding.rvShoppingLists.scrollToPosition(fromPosition);
+        binding.rvShoppingLists.notifyItemRangeInserted(fromPosition, toPosition, true);
     }
 
     @Override
     public void onShoppingListItemMoved(int fromPosition, int toPosition) {
-        adapter.notifyItemMoved(fromPosition, toPosition);
+        binding.rvShoppingLists.notifyItemMoved(fromPosition, toPosition);
     }
 
     @Override
     public void onShoppingListRemoved(int position) {
-        adapter.notifyItemRemoved(position);
+        binding.rvShoppingLists.notifyItemRemoved(position);
     }
 
     @Override
     public void onShoppingListProductRangeRemoved(int fromPosition, int toPosition) {
-        adapter.notifyItemRangeRemoved(fromPosition, toPosition);
+        binding.rvShoppingLists.notifyItemRangeRemoved(fromPosition, toPosition);
     }
 
     @Override

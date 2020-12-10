@@ -1,8 +1,9 @@
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:foregroundTint">@color/colorLightGray</item>
         <item name="actionBarStyle">@style/CustomActionBar</item>
     </style>
 
@@ -16,14 +17,23 @@
     </style>
 
     <!-- Dark Theme -->
-    <style name="DarkAppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorDarkGrey</item>
-        <item name="colorPrimaryDark">@color/colorDarkGrey</item>
+    <style name="DarkAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorDarkGray</item>
+        <item name="colorPrimaryDark">@color/colorDarkerGray</item>
+        <item name="colorAccent">@color/colorDarkAccent</item>
         <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:background">@color/colorDarkGrey</item>
-        <item name="actionBarStyle">@style/CustomActionBar</item>
+        <item name="android:textColorSecondary">@color/colorMediumGray</item>
+        <item name="android:colorBackground">@color/colorDarkGray</item>
+        <item name="android:itemBackground">@color/colorDarkGray</item>
+        <item name="android:editTextColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorMediumGray</item>
+        <item name="android:foregroundTint">@color/colorMediumGray</item>
+        <item name="actionBarStyle">@style/CustomDarkActionBar</item>
     </style>
 
+    <style name="CustomDarkActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/colorPrimaryDarker</item>
+        <item name="titleTextStyle">@style/CustomActionBarTitle</item>
+    </style>
 
 </resources>

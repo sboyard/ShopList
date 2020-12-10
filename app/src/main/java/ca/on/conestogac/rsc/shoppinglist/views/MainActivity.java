@@ -3,7 +3,6 @@ package ca.on.conestogac.rsc.shoppinglist.views;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,9 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ca.on.conestogac.rsc.shoppinglist.R;
-import ca.on.conestogac.rsc.shoppinglist.SettingsActivity;
-
-import static android.view.View.VISIBLE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                break;
             case  R.id.menu_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
@@ -71,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
 //
 //                startActivity(intent);
 //                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setDarkThemeOn(boolean darkThemeOn) {
