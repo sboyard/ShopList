@@ -1,10 +1,12 @@
 package ca.on.conestogac.rsc.shoppinglist.viewmodels;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import androidx.databinding.Bindable;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import ca.on.conestogac.rsc.shoppinglist.BR;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.data.ApplicationDbRepository;
+import ca.on.conestogac.rsc.shoppinglist.data.models.Product;
 import ca.on.conestogac.rsc.shoppinglist.data.models.ShoppingListCounts;
 import ca.on.conestogac.rsc.shoppinglist.data.source.ShoppingListsDataSource.LoadShoppingListsCallback;
 import ca.on.conestogac.rsc.shoppinglist.databinding.ObservableViewModel;
@@ -30,6 +33,7 @@ public class ShoppingListsViewModel extends ObservableViewModel
     // ui
     private ShoppingListItemViewModel editingShoppingList;
     private ShoppingListener shoppingListener;
+    private SharedPreferences sharedPref;
     private String textTitleNewShoppingList;
     private boolean empty;
 
@@ -72,12 +76,32 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
     public void onViewCreated(ShoppingListener shoppingListener) {
         this.shoppingListener = shoppingListener;
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
         // read from DB
         db.shoppingLists().getShoppingLists(this);
     }
 
     public void onViewDestroyed() {
         shoppingListener = null;
+    }
+
+
+    public void onFabClick() {
+        textTitleNewShoppingList = "New";
+        int sortIndex = 0;
+        if (shoppingLists.size() > 0) {
+            sortIndex = shoppingLists.get(shoppingLists.size() - 1).getSortIndex();
+        }
+
+        ShoppingListCounts shoppingList = new ShoppingListCounts(textTitleNewShoppingList, sortIndex, 0, 0);
+
+        // insert into DB
+        db.shoppingLists().saveShoppingList(shoppingList);
+
+        // update fields
+        addShoppingList(createShoppingListItem(shoppingList));
+        setTextTitleNewShoppingList("");
     }
 
     public void onAddShoppingListFocusChange(boolean hasFocus) {
@@ -168,6 +192,13 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
             // notify UI
             shoppingListener.onShoppingListProductRangeRemoved(0, toPosition);
+        }
+        if (sharedPref.getBoolean("delete", false)) {
+            for (ShoppingListCounts list: shoppingLists) {
+                if (list.getTotalCount() == list.getCheckedCount() && list.getTotalCount() != 0) {
+                    db.shoppingLists().deleteShoppingList(list.getId());
+                }
+            }
         }
         // add
         addShoppingListRange(shoppingLists);
