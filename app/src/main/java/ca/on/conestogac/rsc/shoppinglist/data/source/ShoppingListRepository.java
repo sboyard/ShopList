@@ -22,6 +22,7 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
         this.db = db;
     }
 
+    @Override
     public void saveShoppingList(@NotNull ShoppingList shoppingList) {
         Runnable runnable = () -> {
             db.shoppingListsDao().insertShoppingList(shoppingList);
@@ -30,6 +31,7 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
         thread.start();
     }
 
+    @Override
     public void getShoppingLists(@NotNull final LoadShoppingListsCallback callback) {
         Runnable runnable = () -> {
             final List<ShoppingListCounts> shoppingLists = db.shoppingListsDao().getShoppingLists();
@@ -46,6 +48,7 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
         thread.start();
     }
 
+    @Override
     public void getShoppingList(@NotNull final String shoppingListId, @NotNull final LoadShoppingListCallback callback) {
         Runnable runnable = () -> {
             final ShoppingList shoppingList = db.shoppingListsDao().getShoppingListById(shoppingListId);
@@ -62,6 +65,24 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
         thread.start();
     }
 
+    @Override
+    public void getShoppingListWithCounts(@NotNull final String shoppingListId, @NotNull final LoadShoppingListCallback callback) {
+        Runnable runnable = () -> {
+            final ShoppingListCounts shoppingList = db.shoppingListsDao().getShoppingListCountsById(shoppingListId);
+
+            mainThreadHandler.post(() -> {
+                if (shoppingList == null) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onShoppingListCountsLoaded(shoppingList);
+                }
+            });
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
     public void updateShoppingListSortIndex(@NotNull String shoppingListId, int sortIndex) {
         Runnable runnable = () -> {
             db.shoppingListsDao().updateShoppingListIndex(shoppingListId, sortIndex);
@@ -74,6 +95,15 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
     public void deleteShoppingList(@NonNull String shoppingListId) {
         Runnable runnable = () -> {
             db.shoppingListsDao().deleteShoppingListById(shoppingListId);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
+    public void updateShoppingListTitle(@NonNull final String shoppingListId, @NonNull final String title) {
+        Runnable runnable = () -> {
+            db.shoppingListsDao().updateShoppingListTitle(shoppingListId, title);
         };
         Thread thread = new Thread(runnable);
         thread.start();

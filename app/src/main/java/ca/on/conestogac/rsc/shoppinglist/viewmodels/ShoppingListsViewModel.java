@@ -28,8 +28,10 @@ public class ShoppingListsViewModel extends ObservableViewModel
     private final ApplicationDbRepository db;
 
     // ui
+    private ShoppingListItemViewModel editingShoppingList;
     private ShoppingListener shoppingListener;
     private String textTitleNewShoppingList;
+    private boolean empty;
 
     public ShoppingListsViewModel(Context context, ApplicationDbRepository db) {
         this.context = context;
@@ -47,9 +49,14 @@ public class ShoppingListsViewModel extends ObservableViewModel
         notifyPropertyChanged(BR.textTitleNewShoppingList);
     }
 
+    private void updateIsEmpty() {
+        empty = shoppingLists.size() == 0;
+        notifyPropertyChanged(BR.empty);
+    }
+
     @Bindable
     public boolean isEmpty() {
-        return shoppingLists.size() == 0;
+        return empty;
     }
 
     @Bindable
@@ -73,9 +80,20 @@ public class ShoppingListsViewModel extends ObservableViewModel
         shoppingListener = null;
     }
 
+    public void onAddShoppingListFocusChange(boolean hasFocus) {
+        if (hasFocus && editingShoppingList != null) {
+            onStopEditingItem();
+        }
+    }
+
     public void onAddShoppingListClicked() {
         if (!TextUtils.isEmpty(textTitleNewShoppingList)) {
-            ShoppingListCounts shoppingList = new ShoppingListCounts(textTitleNewShoppingList, shoppingLists.size(), 0, 0);
+            int sortIndex = 0;
+            if (shoppingLists.size() > 0) {
+                sortIndex = shoppingLists.get(shoppingLists.size() - 1).getSortIndex();
+            }
+
+            ShoppingListCounts shoppingList = new ShoppingListCounts(textTitleNewShoppingList, sortIndex, 0, 0);
 
             // insert into DB
             db.shoppingLists().saveShoppingList(shoppingList);
@@ -109,6 +127,7 @@ public class ShoppingListsViewModel extends ObservableViewModel
     private void notifyShoppingListsUpdated() {
         notifyPropertyChanged(BR.empty);
         notifyPropertyChanged(BR.noShoppingListsLabel);
+        updateIsEmpty();
     }
 
     private ShoppingListItemViewModel createShoppingListItem(ShoppingListCounts shoppingList) {
@@ -167,6 +186,10 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
     @Override
     public void onItemRemove(@NotNull ShoppingListItemViewModel shoppingList) {
+        if (editingShoppingList != null && shoppingList != editingShoppingList) {
+            onStopEditingItem();
+        }
+
         // remove
         int index = shoppingLists.indexOf(shoppingList);
         shoppingLists.remove(index);
@@ -182,7 +205,32 @@ public class ShoppingListsViewModel extends ObservableViewModel
 
     @Override
     public void onItemClick(@NotNull ShoppingListItemViewModel shoppingList) {
+        if (editingShoppingList != null && shoppingList != editingShoppingList) {
+            onStopEditingItem();
+        }
+
         // notify UI
         shoppingListener.onShoppingListActivityChange(shoppingList);
+    }
+
+    @Override
+    public void onStartEditingItem(ShoppingListItemViewModel shoppingList) {
+        if (editingShoppingList != null && shoppingList != editingShoppingList) {
+            onStopEditingItem();
+        }
+        editingShoppingList = shoppingList;
+
+        // update UI - reset the Add Shopping list editText
+        setTextTitleNewShoppingList("");
+    }
+
+    @Override
+    public void onStopEditingItem() {
+        ShoppingListItemViewModel prevEditing = editingShoppingList;
+        editingShoppingList = null;
+
+        if (prevEditing != null) {
+            prevEditing.onUndoClicked();
+        }
     }
 }
