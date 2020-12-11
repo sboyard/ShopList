@@ -12,19 +12,17 @@
     <string name="no_shopping_lists_message">You have no shopping lists</string>
     <string name="no_products_message">Add products to this shopping list</string>
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="options">Options</string>
+    <string name="theme_header">Theme</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
     <string name="settings">Settings</string>
     <string name="statistics">Statistics</string>
     <string name="theme">Dark Theme</string>
     <string name="dark_on">Dark theme ON</string>
     <string name="dark_off">Dark theme OFF</string>
+    <string name="delete_on">Delete ON</string>
+    <string name="delete_off">Delete theme OFF</string>
+    <string name="delete_list">Delete completed list on restart?</string>
     <string name="reset">Reset</string>
 </resources>
