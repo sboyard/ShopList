@@ -22,7 +22,7 @@
     <string name="dark_on">Dark theme ON</string>
     <string name="dark_off">Dark theme OFF</string>
     <string name="delete_on">Delete ON</string>
-    <string name="delete_off">Delete theme OFF</string>
+    <string name="delete_off">Delete OFF</string>
     <string name="delete_list">Delete completed list on restart?</string>
     <string name="reset">Reset</string>
 </resources>

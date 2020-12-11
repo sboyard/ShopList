@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentProductListBinding;
@@ -69,8 +71,9 @@ public class ProductListFragment extends Fragment implements ProductListener {
 
     @Override
     public void onSnackBarDisplay(String message) {
-        // TODO : display snackBar message
-    }
+        Snackbar snackbar = Snackbar
+                .make(getView(), message, Snackbar.LENGTH_LONG);
+        snackbar.show();    }
 
     @Override
     public void onProductInserted(int position) {
