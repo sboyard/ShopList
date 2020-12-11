@@ -103,6 +103,18 @@ public class ProductListsViewModel extends ObservableViewModel
         return R.string.no_products_message;
     }
 
+    public void onFabClick() {
+        textTitleNewProduct = "New";
+        Product product = new Product(shoppingListId, textTitleNewProduct, products.size());
+
+        // insert into DB
+        db.products().saveProduct(product);
+
+        // update fields
+        addProduct(createProductItem(product));
+        setTextTitleNewProduct("");
+    }
+
     public void onAddProductClicked() {
         if (!TextUtils.isEmpty(textTitleNewProduct)) {
             Product product = new Product(shoppingListId, textTitleNewProduct, products.size());

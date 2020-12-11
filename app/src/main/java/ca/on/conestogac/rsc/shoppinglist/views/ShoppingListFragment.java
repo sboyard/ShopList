@@ -13,6 +13,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import ca.on.conestogac.rsc.shoppinglist.App;
 import ca.on.conestogac.rsc.shoppinglist.R;
 import ca.on.conestogac.rsc.shoppinglist.databinding.FragmentShoppingListBinding;
@@ -84,8 +86,9 @@ public class ShoppingListFragment extends Fragment implements ShoppingListener {
 
     @Override
     public void onSnackBarDisplay(String message) {
-        // TODO : display snackBar message
-    }
+        Snackbar snackbar = Snackbar
+                .make(getView(), message, Snackbar.LENGTH_LONG);
+        snackbar.show();    }
 
     @Override
     public void onShoppingListInserted(int position) {
