@@ -16,6 +16,8 @@ public interface ShoppingListsDataSource {
     }
 
     interface LoadShoppingListCallback {
+
+        void onShoppingListCountReturned(int count);
         void onShoppingListLoaded(ShoppingList shoppingList);
         void onShoppingListCountsLoaded(ShoppingListCounts shoppingList);
         void onDataNotAvailable();
@@ -29,6 +31,7 @@ public interface ShoppingListsDataSource {
     void getShoppingList(@NotNull final String shoppingListId, @NotNull final LoadShoppingListCallback callback);
     void getShoppingListWithCounts(@NotNull final String shoppingListId, @NotNull final LoadShoppingListCallback callback);
     void updateShoppingListTitle(@NonNull final String shoppingListId, @NonNull final String title);
+    void getListCount(@NotNull final LoadShoppingListCallback callback);
 
     // update
     void updateShoppingListSortIndex(@NonNull String shoppingListId, int sortIndex);

@@ -42,6 +42,7 @@ public interface ProductDao {
      * @param productId    id of the product
      * @param checked      checked to be updated
      */
+
     @Query("UPDATE product SET checked = :checked WHERE productId = :productId")
     void updateChecked(String productId, boolean checked);
 
@@ -61,4 +62,8 @@ public interface ProductDao {
      */
     @Query("DELETE FROM product WHERE productId = :productid")
     int deleteProductById(String productid);
+
+    @Query("SELECT COUNT(*) FROM product")
+     int getProductCount();
+
 }

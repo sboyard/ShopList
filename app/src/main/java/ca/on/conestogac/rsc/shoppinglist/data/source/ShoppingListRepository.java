@@ -2,7 +2,6 @@ package ca.on.conestogac.rsc.shoppinglist.data.source;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -104,6 +103,19 @@ public class ShoppingListRepository implements ShoppingListsDataSource {
     public void updateShoppingListTitle(@NonNull final String shoppingListId, @NonNull final String title) {
         Runnable runnable = () -> {
             db.shoppingListsDao().updateShoppingListTitle(shoppingListId, title);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
+    public void getListCount(@NotNull final LoadShoppingListCallback callback) {
+        Runnable runnable = () -> {
+            final int count = db.shoppingListsDao().getListCount();
+
+            mainThreadHandler.post(() -> {
+                callback.onShoppingListCountReturned(count);
+            });
         };
         Thread thread = new Thread(runnable);
         thread.start();
