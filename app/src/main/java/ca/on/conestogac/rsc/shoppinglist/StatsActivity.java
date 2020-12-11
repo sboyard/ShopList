@@ -30,12 +30,6 @@ public class StatsActivity extends AppCompatActivity implements SharedPreference
         // setup listener on preference change
         sharedPref.registerOnSharedPreferenceChangeListener(this);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.stats_activity, new StatsActivity.StatsFragment())
-                    .commit();
-        }
         App app = (App)getApplication();
         ApplicationDbRepository db = app.getRepository();
 
