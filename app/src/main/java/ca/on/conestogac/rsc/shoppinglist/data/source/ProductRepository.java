@@ -61,6 +61,19 @@ public class ProductRepository implements ProductDataSource {
     }
 
     @Override
+    public void getProductsCount(@NotNull LoadProductCallback callback) {
+        Runnable runnable = () -> {
+            final int count = db.productsDao().getProductCount();
+
+            mainThreadHandler.post(() -> {
+                callback.onProductCountReturned(count);
+            });
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
     public void deleteProduct(@NonNull String productId) {
         Runnable runnable = () -> {
             db.productsDao().deleteProductById(productId);

@@ -25,4 +25,7 @@
     <string name="delete_off">Delete OFF</string>
     <string name="delete_list">Delete completed list on restart?</string>
     <string name="reset">Reset</string>
+    <string name="shoppingCount">Number of Lists</string>
+    <string name="productCount">Number of Products
+    </string>
 </resources>

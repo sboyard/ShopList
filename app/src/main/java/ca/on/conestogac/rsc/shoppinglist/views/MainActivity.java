@@ -11,6 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ca.on.conestogac.rsc.shoppinglist.R;
+import ca.on.conestogac.rsc.shoppinglist.views.SettingsActivity;
+import ca.on.conestogac.rsc.shoppinglist.StatsActivity;
+
+import static android.view.View.VISIBLE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        setTheme(R.style.AppTheme);
         creatingActivity = true;
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
@@ -65,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
             case  R.id.menu_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
-//            case R.id.menu_statistics:
-//                Intent intent = new Intent(getApplicationContext(), StatsActivity.class);
-//
+            case R.id.menu_statistics:
+                startActivity(new Intent(getApplicationContext(), StatsActivity.class));
+
 //                startActivity(intent);
-//                return true;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
     }

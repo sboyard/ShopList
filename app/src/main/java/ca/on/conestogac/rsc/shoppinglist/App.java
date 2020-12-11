@@ -15,6 +15,7 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        setTheme(R.style.AppTheme);
         repository = new ApplicationDbRepository(ApplicationDatabase.getInstance(getApplicationContext()));
         super.onCreate();
     }

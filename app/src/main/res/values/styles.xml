@@ -36,4 +36,9 @@
         <item name="titleTextStyle">@style/CustomActionBarTitle</item>
     </style>
 
+    <style name = "SplashScreen" parent="Theme.AppCompat.Light">
+        <item name="android:windowBackground">@drawable/ic_rscsplash</item>
+    </style>
+
+
 </resources>

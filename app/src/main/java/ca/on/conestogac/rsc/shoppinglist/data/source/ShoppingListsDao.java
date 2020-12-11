@@ -78,4 +78,7 @@ public interface ShoppingListsDao {
      */
     @Query("DELETE FROM shoppinglist WHERE shoppinglistid = :shoppingListId")
     int deleteShoppingListById(String shoppingListId);
+
+    @Query("SELECT COUNT(*) FROM shoppinglist ")
+    int getListCount();
 }

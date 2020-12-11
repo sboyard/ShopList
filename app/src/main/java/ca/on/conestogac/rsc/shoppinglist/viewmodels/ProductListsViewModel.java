@@ -167,6 +167,11 @@ public class ProductListsViewModel extends ObservableViewModel
     }
 
     @Override
+    public void onShoppingListCountReturned(int count) {
+
+    }
+
+    @Override
     public void onShoppingListLoaded(ShoppingList shoppingList) {
         modelObservable.set(shoppingList);
     }
