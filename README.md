@@ -8,3 +8,6 @@ The items inside the lists and the lists themselves can be reorganized by drag a
 
 # Contribute
 Any improvements or additional features are welcome.  
+
+#Note
+The license was chosen because it is the most commonly used by Android projects. 
