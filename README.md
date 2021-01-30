@@ -11,5 +11,3 @@ Any improvements or additional features are welcome.
 
 # Note
 The license was chosen because it is the most commonly used by Android projects. 
-
-Add a change to revert
