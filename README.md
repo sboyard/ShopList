@@ -1,4 +1,4 @@
-Samantha Boyard
+# Samantha Boyard
 # Introduction 
 Shopping is an app to organize different shopping list you have. You can have a groery list, a hardware list, a pet store list etc. 
 The items inside the lists and the lists themselves can be reorganized by drag and drop
